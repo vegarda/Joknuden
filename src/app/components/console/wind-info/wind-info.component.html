@@ -1,0 +1,21 @@
+<div class="wind-info-container console-column">
+    <ng-container *ngIf="consoleData.windSpeed > 0 && Number.isFinite(consoleData.windDir)">
+        <span class="beaufort">{{ getBeaufort() }}</span>
+        <span class="direction">{{ getDirection() }} ({{ consoleData.windDir }} °)</span>
+    </ng-container>
+    <div class="wind-speed data-row">
+        <i class="wi wi-strong-wind"></i>
+        <span class="data-value">{{ intl.format(consoleData.windSpeed) }}</span>
+        <span class="data-unit">mps</span>
+    </div>
+    <!-- {{ this.getGustingElement() }} -->
+
+    <div class="wind-gust data-row">
+        <ng-container *ngIf="consoleData.windGust > consoleData.windSpeed">
+            <i class="wi"></i>
+            <span class="data-value">({{ intl.format(consoleData.windGust) }})</span>
+            <span class="data-unit">mps</span>
+        </ng-container>
+    </div>
+</div>
+

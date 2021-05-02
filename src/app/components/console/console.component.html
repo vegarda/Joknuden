@@ -1,0 +1,63 @@
+
+<ng-template #propertyTemplate let-label="label" let-value="value" let-icon="icon" let-unit="unit">
+    <div class="property">
+        <span class="property-header">
+            <label *ngIf="label">{{ label }}</label>
+            <span *ngIf="icon" class="icon">
+                <i class="wi {{ icon }}"></i>
+            </span>
+        </span>
+        <span class="data">
+            <span class="data-value">{{ value }}</span>
+            <span *ngIf="unit" class="data-unit">{{ unit }}</span>
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #noData>
+    <!-- no data -->
+</ng-template>
+
+<ng-container *ngIf="data; let _data; else noData">
+
+    <!-- {{ _data | json }} -->
+
+    <div class="console-container">
+
+        <div class="props console-column">
+            <ng-container *ngFor="let config of configs">
+                <ng-container
+                    [ngTemplateOutlet]="propertyTemplate"
+                    [ngTemplateOutletContext]="{
+                        label: config.label,
+                        value: _data[config.property] | numberFormat:config.numberFormatOptions,
+                        icon: config.icon,
+                        unit: config.unit
+                    }"></ng-container>
+            </ng-container>
+        </div>
+
+        <div class="temp console-column">
+            <ng-container
+                    [ngTemplateOutlet]="propertyTemplate"
+                    [ngTemplateOutletContext]="{
+                        label: temperatureConfig.label,
+                        value: _data[temperatureConfig.property] | numberFormat:temperatureConfig.numberFormatOptions,
+                        icon: temperatureConfig.icon,
+                        unit: temperatureConfig.unit
+                    }"></ng-container>
+        </div>
+
+        <jok-wind-compass [windDir]="_data.windDir" class="console-column"></jok-wind-compass>
+
+        <jok-wind-info [consoleData]="_data" class="console-column"></jok-wind-info>
+
+        <div class="webcam console-column">
+            webcam
+        </div>
+
+    </div>
+
+</ng-container>
+
+

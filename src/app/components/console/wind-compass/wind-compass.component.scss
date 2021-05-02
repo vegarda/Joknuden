@@ -1,0 +1,10 @@
+
+:host {
+    display: flex;
+}
+
+.arrow {
+    stroke-linejoin: round;
+    // vectorEffect: "none";
+    transition: all 400ms;
+}

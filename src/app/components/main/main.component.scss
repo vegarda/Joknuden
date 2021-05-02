@@ -1,5 +1,32 @@
 
 :host {
-  display: flex;
-  flex-direction: column;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.asdasd {
+    width: 100em;
+    max-width: 100%;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5em;
+}
+
+.cccc {
+    display: flex;
+    flex-direction: column;
+}
+
+mat-card {
+    margin: 0.5em;
+}
+
+
+jok-console {
+    height: 10em;
 }

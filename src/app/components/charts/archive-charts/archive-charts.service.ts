@@ -5,6 +5,9 @@ import { ArchiveData, TimeUnit } from 'src/app/models/joknuden.models';
 import { TungenesApi } from 'src/app/api/tungenes-api';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { RoutingService } from 'src/app/services/routing.service';
+import { AbortablePromise, RequestPromise } from 'src/app/utils/promise';
+
+
 
 
 @Injectable()
@@ -23,7 +26,7 @@ export class ArchiveChartsService {
         this.init();
     }
 
-    private async init(): Promise<void> {
+    private init(): void {
 
         this.routingService.urlAfterRedirects$.subscribe(async _urlAfterRedirects => {
 
@@ -69,41 +72,56 @@ export class ArchiveChartsService {
 
     private abortController: AbortController;
 
-    private isFetching: boolean = false;
-    private fetchFailed: boolean = false;
+    private request: AbortablePromise<ArchiveData[]>;
 
-    private async getArchiveData(timeUnit: TimeUnit, amount: number = 1, signal?: AbortSignal | null): Promise<void> {
+    private async getArchiveData(timeUnit: TimeUnit, amount: number = 1): Promise<void> {
 
         console.log('ArchiveChartsService.getArchiveData()', timeUnit, amount);
 
-        if (this.abortController) {
-            this.abortController.abort();
-            this.abortController = null;
+        if (this.request) {
+            this.request.abort();
         }
 
-        this.isFetching = true;
-        this.fetchFailed = false;
-
-        const abortController = new AbortController();
-        this.abortController = abortController;
-        this._archiveData$.next([]);
-
         try {
-            const archiveData = await this.tungenesApi.getArchiveData(timeUnit, amount, abortController.signal);
-            this.fetchFailed = false;
-            this.isFetching = false;
+            const request = this.tungenesApi.getArchiveData(timeUnit, amount);
+            this.request = request;
+            const archiveData = await request;
+            this.request = null;
             console.log(archiveData);
             this._archiveData$.next(archiveData);
         }
         catch (error) {
-            this.isFetching = false;
-            this.fetchFailed = true;
             console.error(error);
         }
 
-        if (this.abortController === abortController) {
-            this.abortController = null;
-        }
+        // if (this.abortController) {
+        //     this.abortController.abort();
+        //     this.abortController = null;
+        // }
+
+        // this.isFetching = true;
+        // this.fetchFailed = false;
+
+        // const abortController = new AbortController();
+        // this.abortController = abortController;
+        // this._archiveData$.next([]);
+
+        // try {
+        //     const archiveData = await this.tungenesApi.getArchiveData(timeUnit, amount, abortController.signal);
+        //     this.fetchFailed = false;
+        //     this.isFetching = false;
+        //     console.log(archiveData);
+        //     this._archiveData$.next(archiveData);
+        // }
+        // catch (error) {
+        //     this.isFetching = false;
+        //     this.fetchFailed = true;
+        //     console.error(error);
+        // }
+
+        // if (this.abortController === abortController) {
+        //     this.abortController = null;
+        // }
 
     }
 

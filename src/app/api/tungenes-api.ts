@@ -1,5 +1,7 @@
 
+import { takeUntil } from 'rxjs/operators';
 import { ArchiveData, TimeUnit } from '../models/joknuden.models';
+import { AbortablePromise, RequestPromise } from '../utils/promise';
 import { environment } from './../../environments/environment';
 
 export class TungenesApi {
@@ -29,28 +31,42 @@ export class TungenesApi {
 
     }
 
-    private async fetch<T>(path: string, requestInit?: RequestInit): Promise<T> {
-        try {
-            const fetchResponse = await fetch(path, requestInit);
-            if (!fetchResponse.ok) {
-                throw new Error(fetchResponse.statusText);
+    private fetch<T>(path: string, requestInit: RequestInit = {}): AbortablePromise<T> {
+        if (requestInit.signal) {
+            throw new Error('requestInit.signal');
+        }
+        const abortController = new AbortController();
+        const requestPromise = new RequestPromise<T>(async (resolve, reject) => {
+            try {
+                const _requestInit = Object.assign({}, requestInit);
+                _requestInit.signal = abortController.signal;
+                const fetchResponse = await fetch(path, _requestInit);
+                if (!fetchResponse.ok) {
+                    reject(new Error(fetchResponse.statusText));
+                }
+                const data = await fetchResponse.json();
+                resolve(data);
             }
-            return await fetchResponse.json();
-        }
-        catch (error) {
-            throw error;
-        }
+            catch (error) {
+                throw error;
+            }
+        });
+        console.log('requestPromise', requestPromise);
+        requestPromise.onAbort$.subscribe(() => abortController.abort());
+        return requestPromise;
     }
 
-    private get<T>(path: string, signal?: AbortSignal | null): Promise<T> {
+    private get<T>(path: string): AbortablePromise<T> {
         return this.fetch<T>(`${ this.apiUrl }/${ path }`, {
             method: 'GET',
-            signal: signal,
         });
     }
 
-    public getArchiveData(timeUnit: TimeUnit, amount: number = 1, signal?: AbortSignal | null): Promise<ArchiveData[]> {
-        return this.get(`archive/${ timeUnit }/${ amount > 0 ? amount : '' }`, signal);
+
+
+
+    public getArchiveData(timeUnit: TimeUnit, amount: number = 1): AbortablePromise<ArchiveData[]> {
+        return this.get(`archive/${ timeUnit }/${ amount > 0 ? amount : '' }`);
     }
 
 }

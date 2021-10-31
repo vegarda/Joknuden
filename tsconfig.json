@@ -1,27 +1,43 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
     "compileOnSave": false,
     "compilerOptions": {
         "baseUrl": "./",
         "outDir": "./dist/out-tsc",
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "strictNullChecks": false,
-        "strictPropertyInitialization": false,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
+        "target": "esnext",
+        "module": "esnext",
+        "lib": [
+            "esnext",
+            "dom"
+        ],
+        "moduleResolution": "node",
+
+
+
+
+
+
+
+        // "strict": true,
+        "allowJs": true,
         "sourceMap": true,
         "declaration": false,
+        "importHelpers": true,
+
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": false,
+        "noImplicitReturns": true,
+
+        "esModuleInterop": true,
+        "strictNullChecks": false,
+        "resolveJsonModule": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
-        "moduleResolution": "node",
-        "importHelpers": true,
-        "target": "es2020",
-        "module": "es2020",
-        "lib": [
-            "es2020",
-            "dom"
-        ]
+        "noFallthroughCasesInSwitch": true,
+        "strictPropertyInitialization": false,
+        "forceConsistentCasingInFileNames": true,
+
+
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,

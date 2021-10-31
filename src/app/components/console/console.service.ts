@@ -38,6 +38,18 @@ export class ConsoleService {
     ) {
         console.log(this);
         this.openWebSocket();
+        this._data$.next({
+            barometer: 1,
+            dateTime: Date.now(),
+            dayRain: 1,
+            heatindex: 1,
+            outHumidity: 1,
+            outTemp: 1,
+            windDir: 1,
+            windGust: 1,
+            windGustDir: 1,
+            windSpeed: 1,
+        });
     }
 
     private async openWebSocket(): Promise<void> {

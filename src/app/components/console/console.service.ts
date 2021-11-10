@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, interval, Observable } from 'rxjs';
 
 export interface ConsoleData {
     barometer?: number;
@@ -37,18 +37,21 @@ export class ConsoleService {
     constructor(
     ) {
         console.log(this);
-        this.openWebSocket();
-        this._data$.next({
-            barometer: 1,
-            dateTime: Date.now(),
-            dayRain: 1,
-            heatindex: 1,
-            outHumidity: 1,
-            outTemp: 1,
-            windDir: 1,
-            windGust: 1,
-            windGustDir: 1,
-            windSpeed: 1,
+        // this.openWebSocket();
+        const random = () => Math.round(Math.random() * 10);
+        interval(800).subscribe(() => {
+            this._data$.next({
+                barometer: 950 + random() * 10,
+                dateTime: Date.now(),
+                dayRain: random(),
+                heatindex: random(),
+                outHumidity: random() * 10,
+                outTemp: random(),
+                windDir: random(),
+                windGust: random(),
+                windGustDir: random(),
+                windSpeed: random(),
+            });
         });
     }
 

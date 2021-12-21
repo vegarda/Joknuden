@@ -39,10 +39,17 @@ export class TimeService {
                 return;
             }
 
+            _urlAfterRedirects = _urlAfterRedirects.toLowerCase();
+
             let _timeUnit = TimeUnit.Day;
             let _amount = Number.parseInt(_urlAfterRedirects.replace(/\D/g, ''), 10) || 1;
 
             switch (true) {
+                case (_urlAfterRedirects.includes(TimeUnit.Yesterday)): {
+                    _timeUnit = TimeUnit.Yesterday;
+                    _amount = 0;
+                    break;
+                }
                 case (_urlAfterRedirects.includes(TimeUnit.Day)): {
                     _timeUnit = TimeUnit.Day;
                     break;

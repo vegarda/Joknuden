@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HiLo } from 'src/app/models/joknuden.models';
+import { HiLo, HiLoValue } from 'src/app/models/joknuden.models';
 import { AppService } from 'src/app/services/app.service';
 import { RoutingService } from 'src/app/services/routing.service';
 import { HiloService } from './hilo.service';
@@ -76,7 +76,31 @@ export class HiloComponent {
                     return 'Wind';
                 }
             }
-        }
+        };
+
+        const shouldShowLow = (property: keyof HiLo) => {
+            switch (property) {
+                case 'outTemp':
+                case 'barometer': {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        const getLowTime = (property: keyof HiLo, hiLoValue: HiLoValue) => {
+            if (shouldShowLow(property)) {
+                return dateTimeFormat.format(new Date(hiLoValue.lowTime * 1000));
+            }
+            return null;
+        };
+
+        const getLow = (property: keyof HiLo, hiLoValue: HiLoValue) => {
+            if (shouldShowLow(property)) {
+                return numberFormat.format(hiLoValue.low);
+            }
+            return null;
+        };
 
         this.hiloService.data$.subscribe(hiLoData => {
             if (!hiLoData) {
@@ -91,8 +115,8 @@ export class HiloComponent {
                     average: numberFormat.format(hiLoValue.average),
                     high: numberFormat.format(hiLoValue.high),
                     highTime: dateTimeFormat.format(new Date(hiLoValue.highTime * 1000)),
-                    low: numberFormat.format(hiLoValue.low),
-                    lowTime: dateTimeFormat.format(new Date(hiLoValue.lowTime * 1000)),
+                    low: getLow(key, hiLoValue),
+                    lowTime: getLowTime(key, hiLoValue),
                 }
             });
         });

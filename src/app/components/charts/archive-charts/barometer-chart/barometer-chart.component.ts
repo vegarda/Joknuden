@@ -16,7 +16,8 @@ interface ArchiveDataX extends Omit<ArchiveData, 'dateTime'> {
 })
 export class BarometerChartComponent {
 
-    @ViewChild(ChartComponent, { static: true }) private chartComponent: ChartComponent;
+    @ViewChild(ChartComponent, { static: true })
+    private chartComponent: ChartComponent;
 
     private _archiveDataX: ArchiveDataX[] = [];
     public get archiveData(): ArchiveDataX[] {
@@ -30,17 +31,24 @@ export class BarometerChartComponent {
     ) { }
 
     public ngOnInit(): void {
-        console.log(this);
         this.archiveChartsService.archiveData$.subscribe(archiveData => {
             this._archiveDataX = archiveData.map(_ad => {
                 return Object.assign({}, _ad, { dateTime: new Date(_ad.dateTime * 1000) });
-            })
+            });
         });
     }
 
     public ngOnDestroy(): void {
         this.onDestroy$.next();
         this.onDestroy$.complete();
+    }
+
+
+    private draw(): void {
+        if (!this.chartComponent) {
+            return;
+        }
+        this.chartComponent.drawLine();
     }
 
 

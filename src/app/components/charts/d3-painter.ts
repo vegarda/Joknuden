@@ -20,8 +20,14 @@ export class d3Painter<Datum = unknown> {
     }
 
     private svg: d3.Selection<SVGSVGElement, Datum, null, never>;
+
     private mainContainer: d3.Selection<SVGGElement, Datum, null, never>;
-    private xAxisTimeRange: d3.ScaleTime<number, number, never>;
+
+    private timeScale: d3.ScaleTime<number, number, never>;
+    private valueScale: d3.ScaleLinear<number, number, never>;
+
+    private axisLeft: d3.Axis<d3.NumberValue>;
+    private axisRight: d3.Axis<d3.NumberValue>;
 
     constructor(
         private svgElement: SVGSVGElement,
@@ -31,11 +37,15 @@ export class d3Painter<Datum = unknown> {
 
     public clearSvg(): this {
         console.log('d3Painter.clearSvg()');
+        this.mainContainer = null;
+        this.timeScale = null;
+        this.valueScale = null;
+        this.axisLeft = null;
+        this.axisRight = null;
         if (!this.svg) {
             return this;
         }
         this.svg.selectAll('*').remove();
-        this.mainContainer = null;
         this.svg.attr('width', null);
         this.svg.attr('height', null);
         this.svg.attr('viewBox', null);
@@ -97,32 +107,34 @@ export class d3Painter<Datum = unknown> {
 
 
 
-    public setTime(
-        datum: Iterable<Datum>,
+    public setTimeScale(
+        datum: Datum[],
         timeProp: KeysOfType<Datum, Date>,
     ): this {
 
-        console.log('d3Painter.setTime()');
-        console.log('datum', datum);
-        console.log('timeProp', timeProp);
+        console.log('d3Painter.setTimeScale()');
+
+        if (!timeProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('timeProp', timeProp);
+            console.warn('datum', datum);
+            return this;
+        }
 
         this.prepareSvg();
-
-        const array = Array.from(datum);
 
         const width = this.width;
         const height = this.height;
 
-        const xAxisTimeRange = d3.scaleTime().range([0, width]);
-        this.xAxisTimeRange = xAxisTimeRange;
-        if (array.length === 0) {
+        const timeScale = d3.scaleTime().range([0, width]);
+        this.timeScale = timeScale;
+        if (datum.length === 0) {
             return this;
         }
 
-        xAxisTimeRange.domain([array[0][timeProp] as any as Date, array[array.length - 1][timeProp] as any as Date]);
-        const firstDate =  new Date(array[0][timeProp] as any as Date);
-        const secondDate =  new Date(array[1][timeProp] as any as Date);
-        const lastDate =  new Date(array[array.length - 1][timeProp] as any as Date);
+        timeScale.domain([datum[0][timeProp] as any as Date, datum[datum.length - 1][timeProp] as any as Date]);
+        const firstDate =  new Date(datum[0][timeProp] as any as Date);
+        const secondDate =  new Date(datum[1][timeProp] as any as Date);
+        const lastDate =  new Date(datum[datum.length - 1][timeProp] as any as Date);
         const interval = secondDate.getTime() - firstDate.getTime();
         const length = lastDate.getTime() - firstDate.getTime();
 
@@ -134,7 +146,7 @@ export class d3Painter<Datum = unknown> {
         const oneHourInMs = 60 * 60 * 1000;
         const oneDayInMs = 24 * oneHourInMs;
         const oneWeekInMs = 7 * oneDayInMs;
-        const oneMonthInMs = 31 * oneWeekInMs;
+        const oneMonthInMs = 4 * oneWeekInMs;
 
         if (length < 1 * oneDayInMs) {
             dateTimeFormatOptions.hour = '2-digit';
@@ -151,7 +163,7 @@ export class d3Painter<Datum = unknown> {
         const iso8601Locale = 'sv-Se';
         const hour24LocaleIso8601Locale = `${ iso8601Locale }-u-hc-h23`;
 
-        const dateTimeFormat = Intl.DateTimeFormat(iso8601Locale, dateTimeFormatOptions);
+        const dateTimeFormat = Intl.DateTimeFormat(hour24LocaleIso8601Locale, dateTimeFormatOptions);
         const xAxisTickFormat = (domainValue: number | Date | { valueOf(): number; }, index: number): string => {
             // console.log(domainValue);
             return dateTimeFormat.format(domainValue as Date);
@@ -173,7 +185,7 @@ export class d3Painter<Datum = unknown> {
         console.log('months', months);
 
 
-        if (months >= 6) {
+        if (months >= 4) {
             xAxisTimeInterval = d3.timeMonth.every(1);
         }
         else if (months >= 2) {
@@ -198,7 +210,7 @@ export class d3Painter<Datum = unknown> {
             xAxisTimeInterval = d3.timeHour.every(1);
         }
 
-        const axisBottom = d3.axisBottom(xAxisTimeRange);
+        const axisBottom = d3.axisBottom(timeScale);
         axisBottom.tickFormat(xAxisTickFormat);
         axisBottom.ticks(xAxisTimeInterval);
         axisBottom.tickSize(0);
@@ -231,54 +243,74 @@ export class d3Painter<Datum = unknown> {
 
     }
 
-    public drawLine(
-        datum: Iterable<Datum>,
-        prop: KeysOfType<Datum, number>,
-        timeProp: KeysOfType<Datum, Date>,
-        unit: string = '',
+    public setValueScale(
+        datum: Datum[],
+        minProp: KeysOfType<Datum, number>,
+        maxProp: KeysOfType<Datum, number>,
     ): this {
 
-        console.log('d3Painter.drawLine()');
+        console.log('d3Painter.setValueScale()');
 
-        console.log('datum', datum);
-        console.log('prop', prop);
-        console.log('timeProp', timeProp);
-        console.log('unit', unit);
-
-        if (!prop || !timeProp) {
+        if (!minProp || !minProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('minProp', minProp);
+            console.warn('maxProp', maxProp);
+            console.warn('datum', datum);
             return this;
         }
 
+        const height = this.height;
 
-        this.prepareSvg();
-        this.setTime(datum, timeProp);
+        const valueScale = d3.scaleLinear().range([height, 0]);
+        const minValue = Math.floor(d3.min(datum, d => d[minProp] as any as number) - 1);
+        const maxValue = Math.ceil(d3.max(datum, d => d[maxProp] as any as number) + 1);
+        valueScale.domain([minValue, maxValue]);
+
+        console.log('minValue', minValue);
+        console.log('maxValue', maxValue);
+
+        this.valueScale = valueScale;
+
+        return this;
+
+    }
+
+    public setAxisRight(
+        datum: Datum[],
+        minProp: KeysOfType<Datum, number>,
+        maxProp: KeysOfType<Datum, number>,
+        unit: string = '',
+    ): this {
+
+        console.log('d3Painter.setAxisRight()');
+
+        if (!minProp || !minProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('minProp', minProp);
+            console.warn('maxProp', maxProp);
+            console.warn('datum', datum);
+            return this;
+        }
 
         const mainContainer = this.mainContainer
 
-
-        const array = Array.from(datum);
-
         const width = this.width;
-        const height = this.height;
 
-
-        const yAxisValueRange = d3.scaleLinear().range([height, 0]);
-        const minValue = Math.floor(d3.min(array, d => d[prop] as any as number) - 1);
-        const maxValue = Math.ceil(d3.max(datum, d => d[prop] as any as number) + 1);
-        yAxisValueRange.domain([minValue, maxValue]);
-
+        if (!this.valueScale) {
+            this.setValueScale(datum, minProp, maxProp);
+        }
 
         const yAxisTickFormat = (domainValue: number | Date | { valueOf(): number; }, index: number) => `${ domainValue } ${ unit }`;
 
-        const _yAxis = d3.axisRight(yAxisValueRange);
-        _yAxis.tickSize(0);
-        _yAxis.ticks(6);
-        _yAxis.tickFormat(yAxisTickFormat);
+        const axisRight = d3.axisRight(this.valueScale);
+        axisRight.tickSize(0);
+        axisRight.ticks(6);
+        axisRight.tickFormat(yAxisTickFormat);
+
+        this.axisRight = axisRight;
 
         const yAxisGroup = mainContainer.append('g');
         yAxisGroup.attr('class', 'axis y-axis');
         yAxisGroup.attr('transform', 'translate(' + (width) + ', 0)');
-        yAxisGroup.call(_yAxis);
+        yAxisGroup.call(axisRight);
         yAxisGroup.attr('font-size', null);
         yAxisGroup.attr('font-family', null);
         yAxisGroup.style('shape-rendering', 'crispedges')
@@ -295,32 +327,58 @@ export class d3Painter<Datum = unknown> {
         yAxisLines.attr('x1', -width);
         yAxisLines.attr('x2', '0.5em');
 
+        return this;
+
+    }
 
 
+    public drawLine(
+        datum: Datum[],
+        prop: KeysOfType<Datum, number>,
+        timeProp: KeysOfType<Datum, Date>,
+        unit: string = '',
+    ): this {
 
-        const outTempLine = d3.line<any>();
-        outTempLine.curve(d3.curveCatmullRom);
-        outTempLine.x(d => {
-            // console.log(d);
-            // console.log(xAxisTimeRange(d[this.timeProp]));
-            return this.xAxisTimeRange(d[timeProp]);
-        });
-        outTempLine.y(d => {
-            // console.log(d);
-            // console.log(yAxisValueRange(d.outTemp));
-            return yAxisValueRange(d[prop]);
+        console.log('d3Painter.drawLine()');
+
+        if (!prop || !timeProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('prop', prop);
+            console.warn('timeProp', timeProp);
+            console.warn('datum', datum);
+            return this;
+        }
+
+
+        this.prepareSvg();
+        this.setTimeScale(datum, timeProp);
+
+        const mainContainer = this.mainContainer
+
+
+        if (!this.valueScale) {
+            this.setValueScale(datum, prop, prop);
+        }
+
+        if (!this.axisRight) {
+            this.setAxisRight(datum, prop, prop, unit);
+        }
+
+        const line = d3.line<any>();
+        line.curve(d3.curveCatmullRom);
+        line.x(d => this.timeScale(d[timeProp]));
+        line.y(d => {
+            // console.log(d[prop], this.valueScale(d[prop]))
+            return this.valueScale(d[prop]);
         });
 
         const graphGroup = mainContainer.append('g');
         graphGroup.attr('class', 'graph line');
 
-        graphGroup.append('path')
-            .datum(array)
-            .attr('d', outTempLine)
-            .attr('class', 'line');
+        const path = graphGroup.append('path').datum(datum);
+        path.attr('d', line)
+        path.attr('class', 'line');
 
-
-            return this;
+        return this;
 
 
     }
@@ -330,61 +388,54 @@ export class d3Painter<Datum = unknown> {
 
 
     public drawArea(
-        datum: Iterable<Datum>,
+        datum: Datum[],
         minProp: KeysOfType<Datum,number>,
         maxProp: KeysOfType<Datum, number>,
         timeProp: KeysOfType<Datum, Date>,
         unit: string = '',
     ): this {
 
-
         console.log('d3Painter.drawArea()');
 
-        console.log('datum', datum);
-        console.log('minProp', minProp);
-        console.log('maxProp', maxProp);
-        console.log('timeProp', timeProp);
-        console.log('unit', unit);
-
-        if (!minProp || !maxProp) {
-            console.warn('!minProp || !maxProp');
+        if (!minProp || !minProp || !timeProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('timeProp', timeProp);
+            console.warn('minProp', minProp);
+            console.warn('maxProp', maxProp);
+            console.warn('datum', datum);
             return this;
         }
 
         this.prepareSvg();
-        this.setTime(datum, timeProp);
+        this.setTimeScale(datum, timeProp);
 
 
-        const width = this.width;
-        const height = this.height;
+        if (!this.valueScale) {
+            this.setValueScale(datum, minProp, maxProp);
+        }
+
+        if (!this.axisRight) {
+            this.setAxisRight(datum, minProp, maxProp, unit);
+        }
+
+
+        const area = d3.area<Datum>();
+        area.curve(d3.curveCatmullRom);
+        area.x(d => this.timeScale(d[timeProp] as any as number));
+        area.y0(d => this.valueScale(d[minProp] as any as number));
+        area.y1(d => this.valueScale(d[maxProp] as any as number));
 
         const mainContainer = this.mainContainer;
-
-        const array = Array.from(datum);
-
-
-        const yAxisValueRange = d3.scaleLinear().range([height, 0]);
-        const minValue = Math.floor(d3.min(array, d => d[minProp] as any as number) - 1);
-        const maxValue = Math.ceil(d3.max(array, d => d[maxProp] as any as number) + 1);
-        yAxisValueRange.domain([minValue, maxValue]);
-
-
-        const outTempArea = d3.area<Datum>();
-        outTempArea.curve(d3.curveCatmullRom);
-        outTempArea.x(d => this.xAxisTimeRange(d[timeProp] as any as number));
-        outTempArea.y0(d => yAxisValueRange(d[minProp] as any as number));
-        outTempArea.y1(d => yAxisValueRange(d[maxProp] as any as number));
-
-
 
         const graphGroup = mainContainer.append('g');
         graphGroup.attr('class', 'graph area');
 
+        /*
+
         const linearGradient = graphGroup.append('linearGradient');
         linearGradient.attr('id', 'outTempAreaGradient');
         linearGradient.attr('gradientUnits', 'userSpaceOnUse');
-        linearGradient.attr('x1', 0).attr('y1', yAxisValueRange(-15));
-        linearGradient.attr('x2', 0).attr('y2', yAxisValueRange(25));
+        linearGradient.attr('x1', 0).attr('y1', this.valueScale(-15));
+        linearGradient.attr('x2', 0).attr('y2', this.valueScale(25));
 
         const gradientStops = [
             { offset: '0%', color: '#2222ffdd' },
@@ -400,12 +451,12 @@ export class d3Painter<Datum = unknown> {
             stop.attr('stop-color', gradientStops.color);
         });
 
-        graphGroup.append('path')
-            .datum(datum)
-            .attr('d', outTempArea)
-            // .style('fill', 'url(#outTempAreaGradient)')
-            .attr('class', 'area');
+        */
 
+        const path = graphGroup.append('path').datum(datum);
+        path.attr('d', area);
+        // .style('fill', 'url(#outTempAreaGradient)')
+        path.attr('class', 'area');
 
         return this;
 
@@ -416,7 +467,7 @@ export class d3Painter<Datum = unknown> {
 
 
     public drawWindrose(
-        datum: Iterable<Datum>,
+        datum: Datum[],
         unit: string = '',
     ): this {
 
@@ -434,10 +485,10 @@ export class d3Painter<Datum = unknown> {
         console.log('height', height);
 
         const margins = {
-            top: 50,
+            top: 24,
             left: 24,
             right: 24,
-            bottom: 48,
+            bottom: 24,
         }
 
         const innerRadius = 0;
@@ -455,7 +506,7 @@ export class d3Painter<Datum = unknown> {
 
 
         const yAxisValueRange = d3.scaleLinear().range([innerRadius, outerRadius]);
-        yAxisValueRange.domain([0, d3.max(datum as number[])]);
+        yAxisValueRange.domain([0, d3.max(datum as any as number[])]);
 
 
 

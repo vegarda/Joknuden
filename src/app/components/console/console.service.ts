@@ -60,7 +60,20 @@ export class ConsoleService {
 
         console.log('newSocket', this.webSocketReconnectTime);
 
-        this._socket = new WebSocket('ws://localhost:800');
+        const location = window.location;
+        let protocol: string;
+        let port: number;
+        const isSecureProtocol = location.protocol.includes('s');
+        if (isSecureProtocol) {
+            protocol = 'wss';
+            port = 80;
+        }
+        else {
+            protocol = 'ws';
+            port = 8080;
+        }
+
+        this._socket = new WebSocket(`${ protocol }://${ location.hostname }:${ port }/`);
 
         this._socket.addEventListener('open', (test: any) => {
             this.webSocketReconnectTime = 1000;

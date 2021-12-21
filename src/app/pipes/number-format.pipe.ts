@@ -5,9 +5,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class NumberFormatPipe implements PipeTransform {
 
-    public transform(value: number, numberFormatOptions: Intl.NumberFormatOptions): string {
-        const locale: string = window.navigator.language;
-        const numberFormat: Intl.NumberFormat = new Intl.NumberFormat(locale, numberFormatOptions);
+    public transform(value: number, numberFormatOptions: Intl.NumberFormatOptions = { minimumFractionDigits: 1, maximumFractionDigits: 1, }): string {
+        const languages = window.navigator.languages.slice();
+        const numberFormat: Intl.NumberFormat = new Intl.NumberFormat(languages, numberFormatOptions);
         return numberFormat.format(value);
     }
 

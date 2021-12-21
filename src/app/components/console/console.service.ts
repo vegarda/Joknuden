@@ -37,7 +37,8 @@ export class ConsoleService {
     constructor(
     ) {
         console.log(this);
-        // this.openWebSocket();
+        this.openWebSocket();
+        return;
         const random = () => Math.round(Math.random() * 10);
         interval(800).subscribe(() => {
             this._data$.next({

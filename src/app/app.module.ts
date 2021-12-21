@@ -15,10 +15,17 @@ import { WindCompassComponent } from './components/console/wind-compass/wind-com
 import { WindInfoComponent } from './components/console/wind-info/wind-info.component';
 import { TungenesApi } from './api/tungenes-api';
 
-import { TemperatureChartComponent } from './components/charts/archive-charts/temperature-chart.component';
+import { TemperatureChartComponent } from './components/charts/archive-charts/temperature-chart/temperature-chart.component';
 import { ChartComponent } from './components/charts/chart.component';
 import { ArchiveChartsComponent } from './components/charts/archive-charts/archive-charts.component';
 import { ArchiveChartsService } from './components/charts/archive-charts/archive-charts.service';
+import { FooterComponent } from './components/footer/footer.component';
+import { HiloComponent } from './components/hilo/hilo.component';
+import { BarometerChartComponent } from './components/charts/archive-charts/barometer-chart/barometer-chart.component';
+import { WindChartsComponent } from './components/charts/wind-charts/wind-charts.component';
+import { WindChartsService } from './components/charts/wind-charts/wind-charts.service';
+import { HeaderComponent } from './components/header/header.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -33,13 +40,24 @@ import { ArchiveChartsService } from './components/charts/archive-charts/archive
         WindInfoComponent,
 
         ChartComponent,
+
         TemperatureChartComponent,
+        BarometerChartComponent,
+
         ArchiveChartsComponent,
+
+        WindChartsComponent,
+
+        HeaderComponent,
+
+        FooterComponent,
+        HiloComponent,
 
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
+        FormsModule,
         MaterialModule,
         BrowserAnimationsModule,
     ],
@@ -51,6 +69,7 @@ import { ArchiveChartsService } from './components/charts/archive-charts/archive
 
         ConsoleService,
         ArchiveChartsService,
+        WindChartsService,
 
     ],
     bootstrap: [AppComponent]

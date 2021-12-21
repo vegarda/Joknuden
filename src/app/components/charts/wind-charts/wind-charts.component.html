@@ -1,0 +1,19 @@
+
+
+<mat-card>
+    <mat-card-title>Wind</mat-card-title>
+    <div class="container">
+        <mat-card>
+            <mat-card-subtitle>Average velocity by direction</mat-card-subtitle>
+            <jok-chart [data]="windVelocity" unit="mps"></jok-chart>
+        </mat-card>
+        <mat-card>
+            <mat-card-subtitle>Average frequency by direction</mat-card-subtitle>
+            <jok-chart [data]="windFrequency" unit="%"></jok-chart>
+        </mat-card>
+        <mat-card>
+            <mat-card-subtitle>Wind vector (velocity x frequency)</mat-card-subtitle>
+            <jok-chart [data]="windVector" unit="mps"></jok-chart>
+        </mat-card>
+    </div>
+</mat-card>

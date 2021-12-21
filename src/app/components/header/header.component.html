@@ -1,0 +1,26 @@
+
+
+<mat-toolbar class="main-nav-toolbar">
+
+    <!-- <button mat-icon-button color="accent" (click)="toggleSidenav()">
+        <mat-icon>menu</mat-icon>
+    </button> -->
+    <!-- <button mat-raised-button (click)="toggleSidenav()">sidenav</button> -->
+
+    <ng-container *ngIf="isMobile">
+        <!-- <mat-form-field appearance="fill"> -->
+            <!-- <mat-label>Time</mat-label> -->
+            <mat-select placeholder="Time" [disabled]="isDisabled" [(ngModel)]="selectedRoute" (ngModelChange)="navigateToRoute($event.route)">
+                <mat-option  *ngFor="let route of routes" [value]="route">{{ route.label }}</mat-option>
+            </mat-select>
+        <!-- </mat-form-field> -->
+    </ng-container>
+
+    <ng-container *ngIf="!isMobile">
+        <span>Joknuden</span>
+        <button *ngFor="let route of routes" mat-raised-button [disabled]="isDisabled" [routerLink]="route.route">{{ route.label }}</button>
+    </ng-container>
+
+    <mat-spinner *ngIf="showSpinner" [diameter]="48"></mat-spinner>
+
+</mat-toolbar>

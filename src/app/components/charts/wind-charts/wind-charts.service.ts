@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ArchiveData, TimeUnit } from 'src/app/models/joknuden.models';
+import { TimeUnit, WindRoseData } from 'src/app/models/joknuden.models';
 
 import { TungenesApi } from 'src/app/api/tungenes-api';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -13,14 +13,14 @@ import { filter } from 'rxjs/operators';
 
 
 @Injectable()
-export class ArchiveChartsService {
+export class WindChartsService {
 
-    private _archiveData$: BehaviorSubject<ArchiveData[]> = new BehaviorSubject([]);
-    public get archiveData$(): Observable<ArchiveData[]> {
-        return this._archiveData$;
+    private _windRoseData$: BehaviorSubject<WindRoseData> = new BehaviorSubject(null);
+    public get windRoseData$(): Observable<WindRoseData> {
+        return this._windRoseData$;
     }
-    public get archiveData(): ArchiveData[] {
-        return this._archiveData$.value;
+    public get windRoseData(): WindRoseData {
+        return this._windRoseData$.value;
     }
 
     public get isFetching(): boolean {
@@ -49,23 +49,23 @@ export class ArchiveChartsService {
 
     }
 
-    private request: RequestPromise<ArchiveData[]>;
+    private request: RequestPromise<WindRoseData>;
 
     private async updateData(timeUnit: TimeUnit, amount: number = 1): Promise<void> {
 
-        console.log('ArchiveChartsService.updateData()', timeUnit, amount);
+        console.log('WindChartsService.updateData()', timeUnit, amount);
 
         if (this.request) {
             this.request.abort();
         }
 
         try {
-            const request = this.tungenesApi.getArchiveData(timeUnit, amount);
+            const request = this.tungenesApi.getWindroseData(timeUnit, amount);
             this.request = request;
-            const archiveData = await request;
+            const windRoseDate = await request;
             this.request = null;
-            console.log(archiveData);
-            this._archiveData$.next(archiveData);
+            console.log(windRoseDate);
+            this._windRoseData$.next(windRoseDate);
         }
         catch (error) {
             console.error(error);

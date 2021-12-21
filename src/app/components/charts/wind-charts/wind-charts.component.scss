@@ -1,0 +1,45 @@
+@import "src/styles/material";
+
+
+jok-chart {
+    height: 30em;
+    // width: 30%;
+
+    ::ng-deep {
+
+        path.arc {
+            fill: $material-light-blue-900;
+        }
+    }
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    justify-content: space-between;
+
+    mat-card {
+        flex: 1 1 100%;
+
+        &:not(:last-child) {
+            margin-right: 16px;
+        }
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .container {
+        flex-direction: column;
+
+        mat-card {
+            width: 100%;
+        }
+    }
+
+    jok-chart {
+
+    }
+}

@@ -1,0 +1,23 @@
+@import "src/styles/material";
+
+:host {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+jok-chart {
+    width: 100%;
+    height: 100%;
+
+    ::ng-deep {
+
+        .graph {
+
+            path {
+                stroke: $material-pink-900;
+            }
+        }
+    }
+}
+

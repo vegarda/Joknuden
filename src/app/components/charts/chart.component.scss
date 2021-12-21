@@ -1,0 +1,46 @@
+:host {
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    ::ng-deep {
+
+        .line {
+            fill: none;
+            stroke: red;
+            stroke-width: 0.25em;
+        }
+    }
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+
+    ::ng-deep {
+
+        .axis {
+
+            .domain {
+                opacity: 0.6;
+            }
+        }
+
+        .tick-group {
+            // font-size: 0.75em;
+
+            line {
+                opacity: 0.4;
+            }
+
+            text {
+                font-size: 0.75em;
+            }
+
+            &.y-axis {
+
+            }
+        }
+    }
+}
+

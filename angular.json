@@ -33,7 +33,7 @@
                         "styles": [
                             "./node_modules/weather-icons/sass/weather-icons.scss",
                             "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
-                            "src/styles.scss"
+                            "src/styles/styles.scss"
                         ],
                         "scripts": []
                     },
@@ -64,6 +64,14 @@
                                     "maximumError": "4kb"
                                 }
                             ]
+                        },
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
                         }
                     }
                 },
@@ -75,8 +83,12 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "joknuden-ng:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "joknuden-ng:build:development"
                         }
-                    }
+                    },
+                    "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",

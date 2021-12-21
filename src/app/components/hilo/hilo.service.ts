@@ -1,26 +1,33 @@
 import { Injectable } from '@angular/core';
 
-import { ArchiveData, TimeUnit } from 'src/app/models/joknuden.models';
+import { ArchiveData, HiLo, TimeUnit } from 'src/app/models/joknuden.models';
 
 import { TungenesApi } from 'src/app/api/tungenes-api';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { RoutingService } from 'src/app/services/routing.service';
 import { RequestPromise } from 'src/app/utils/promise';
-import { TimeService } from 'src/app/services/time.service';
+import { TimeParams, TimeService } from 'src/app/services/time.service';
 import { filter } from 'rxjs/operators';
 
 
 
 
-@Injectable()
-export class ArchiveChartsService {
 
-    private _archiveData$: BehaviorSubject<ArchiveData[]> = new BehaviorSubject([]);
-    public get archiveData$(): Observable<ArchiveData[]> {
-        return this._archiveData$;
+
+
+
+
+@Injectable({
+    providedIn: 'root',
+})
+export class HiloService {
+
+    private _data$: BehaviorSubject<HiLo> = new BehaviorSubject(null);
+    public get data$(): Observable<HiLo> {
+        return this._data$;
     }
-    public get archiveData(): ArchiveData[] {
-        return this._archiveData$.value;
+    public get data(): HiLo {
+        return this._data$.value;
     }
 
     public get isFetching(): boolean {
@@ -31,8 +38,8 @@ export class ArchiveChartsService {
     }
 
     constructor(
-        private tungenesApi: TungenesApi,
         private routingService: RoutingService,
+        private tungenesApi: TungenesApi,
         private timeService: TimeService,
     ) {
         console.log(this);
@@ -40,32 +47,28 @@ export class ArchiveChartsService {
     }
 
     private init(): void {
-
-        console.log('this.routingService.isNavigating', this.routingService.isNavigating);
-
         this.timeService.timeParams$.pipe(filter(() => !this.routingService.isNavigating)).subscribe(timeParams => {
             this.updateData(timeParams.timeUnit, timeParams.amount);
         });
-
     }
 
-    private request: RequestPromise<ArchiveData[]>;
+    private request: RequestPromise<any>;
 
     private async updateData(timeUnit: TimeUnit, amount: number = 1): Promise<void> {
 
-        console.log('ArchiveChartsService.updateData()', timeUnit, amount);
+        console.log('HiloService.geteData()', timeUnit, amount);
 
         if (this.request) {
             this.request.abort();
         }
 
         try {
-            const request = this.tungenesApi.getArchiveData(timeUnit, amount);
+            const request = this.tungenesApi.getHiLoData(timeUnit, amount);
             this.request = request;
             const archiveData = await request;
             this.request = null;
             console.log(archiveData);
-            this._archiveData$.next(archiveData);
+            this._data$.next(archiveData);
         }
         catch (error) {
             console.error(error);

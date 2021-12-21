@@ -1,26 +1,7 @@
-import { BehaviorSubject, Subject, merge, Observable } from 'rxjs';
-import { first, take, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
 
-export interface IBetterPromise<T = void> {
 
-    onReject$: Observable<any>;
-    onResolve$: Observable<T>;
-    onFulfilled$: Observable<any>;
-
-    isRejected$: Observable<boolean>;
-    isRejected: boolean;
-
-    isResolved$: Observable<boolean>;
-    isResolved: boolean;
-
-    isFulfilled$: Observable<boolean>;
-    isFulfilled: boolean;
-
-    value: T;
-
-}
-
-export class BetterPromise<T = void> extends Promise<T> implements IBetterPromise<T> {
+export class BetterPromise<T = void> extends Promise<T> {
 
     protected _onReject$: Subject<any>;
     public get onReject$(): Observable<any> {
@@ -32,7 +13,7 @@ export class BetterPromise<T = void> extends Promise<T> implements IBetterPromis
         return this._onResolve$;
     }
 
-    protected _onFulfilled$: Observable<any>;
+    protected _onFulfilled$: Subject<void>;
     public get onFulfilled$(): Observable<any> {
         return this._onFulfilled$;
     }
@@ -89,60 +70,63 @@ export class BetterPromise<T = void> extends Promise<T> implements IBetterPromis
         this._isResolved$ = new BehaviorSubject(false);
         this._isFulfilled$ = new BehaviorSubject(false);
 
-        this._onResolve$.pipe(first(), takeUntil(this._onReject$)).subscribe((value?: T) => {
+        this._onFulfilled$.subscribe(() => {
+            this._isFulfilled$.next(true);
+            this._isFulfilled$.complete();
+            this._isRejected$.complete();
+            this._isResolved$.complete();
+            this._onResolve$.complete();
+            this._onReject$.complete();
+        });
+
+        this._onResolve$.subscribe((value?: T) => {
             this._value = value;
             _resolver(value);
             this._isResolved$.next(true);
+            this._isResolved$.complete();
+            this._onFulfilled$.next();
+            this._onFulfilled$.complete();
         });
 
-        this._onReject$.pipe(first(), takeUntil(this._onResolve$)).subscribe((value?: any) => {
+        this._onReject$.subscribe((value?: any) => {
             _rejecter(value);
             this._isRejected$.next(true);
+            this._isRejected$.complete();
+            this._onFulfilled$.next();
+            this._onFulfilled$.complete();
         });
 
         if (executor) {
             executor(
-                value => {
-                    this.resolve(value);
-                },
-                reason => {
-                    this.reject(reason);
-                }
+                value => this.resolve(value),
+                reason => this.reject(reason)
             );
         }
 
     }
 
     public resolve(value?: T): void {
+        console.log('BetterPromise.resolve()', 'isFulfilled', this.isFulfilled, 'value', value);
         if (this.isFulfilled) {
             return;
         }
         // console.log('resolveresolveresolveresolveresolve');
         this._onResolve$.next(value);
         this._onResolve$.complete();
-        this._onReject$.complete();
-        this._isFulfilled$.next(true);
-        this._isFulfilled$.complete();
     }
 
     public reject(reason?: any): void {
+        console.log('BetterPromise.reject()', 'isFulfilled', this.isFulfilled, 'reason', reason);
         if (this.isFulfilled) {
             return;
         }
         // console.log('rejectrejectrejectrejectrejectreject', reason);
         this._onReject$.next(reason);
         this._onReject$.complete();
-        this._onResolve$.complete();
-        this._isFulfilled$.next(true);
-        this._isFulfilled$.complete();
     }
 
 }
 
-
-export interface AbortablePromise<T = void> extends Promise<T> {
-    abort(): void;
-}
 
 
 export class RequestPromise<T> extends BetterPromise<T> {
@@ -167,7 +151,7 @@ export class RequestPromise<T> extends BetterPromise<T> {
         ) => void
     ) {
         super(executor);
-        this._onFulfilled$.pipe(take(1)).subscribe(() => this._onAbort$.complete());
+        this._onFulfilled$.subscribe(() => this._onAbort$.complete());
     }
 
     public abort(): void {

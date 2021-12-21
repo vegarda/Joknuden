@@ -1,0 +1,48 @@
+@import "src/styles/material";
+
+:host {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // background-color: $material-grey-900;
+}
+
+
+
+.main-nav-toolbar {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    padding: 0 4em;
+
+    span {
+        margin-right: 2em;
+    }
+
+    button:first-child {
+        // margin-left: 10em;
+    }
+
+    button:not(:last-child) {
+        margin-right: 1em;
+    }
+}
+
+mat-spinner {
+    width: 4em;
+    height: 4em;
+    margin-left: auto;
+}
+
+mat-select {
+    width: calc(100% - 5em);
+}
+
+@media (max-width: 768px) {
+
+    .main-nav-toolbar {
+        padding: 0 2em;
+    }
+
+}

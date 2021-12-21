@@ -34,6 +34,16 @@ export class ConsoleComponent implements OnInit, OnDestroy {
 
     public readonly configs: ReadonlyArray<Config> = [
         {
+            property: 'outTemp',
+            unit: '°C',
+            icon: 'wi-thermometer',
+            numberFormatOptions: {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+            },
+            label: 'Temperature',
+        },
+        {
             property: 'barometer',
             unit: 'hPa',
             icon: 'wi-barometer',
@@ -43,6 +53,7 @@ export class ConsoleComponent implements OnInit, OnDestroy {
             },
             label: 'Barometer',
         },
+        /*
         {
             property: 'outHumidity',
             unit: '%',
@@ -53,6 +64,7 @@ export class ConsoleComponent implements OnInit, OnDestroy {
             },
             label: 'Humidity',
         },
+        */
         {
             property: 'dayRain',
             unit: 'mm',

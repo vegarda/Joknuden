@@ -31,12 +31,14 @@ jok-console {
     height: 10em;
 }
 
+@media screen and (max-width: 1024px) {
 
-.main-nav-toolbar {
-    position: fixed;
-    top: 0;
-    z-index: 1;;
+    jok-console {
+        height: auto;
+    }
 }
+
+
 
 .wwwwwwwwwfw {
     margin: 0.5em;

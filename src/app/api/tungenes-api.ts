@@ -1,7 +1,6 @@
 
-import { takeUntil } from 'rxjs/operators';
-import { ArchiveData, TimeUnit } from '../models/joknuden.models';
-import { AbortablePromise, RequestPromise } from '../utils/promise';
+import { ArchiveData, HiLo, TimeUnit, WindRoseData } from '../models/joknuden.models';
+import { RequestPromise } from '../utils/promise';
 import { environment } from './../../environments/environment';
 
 export class TungenesApi {
@@ -31,7 +30,7 @@ export class TungenesApi {
 
     }
 
-    private fetch<T>(path: string, requestInit: RequestInit = {}): AbortablePromise<T> {
+    private fetch<T>(path: string, requestInit: RequestInit = {}): RequestPromise<T> {
         if (requestInit.signal) {
             throw new Error('requestInit.signal');
         }
@@ -56,7 +55,7 @@ export class TungenesApi {
         return requestPromise;
     }
 
-    private get<T>(path: string): AbortablePromise<T> {
+    private get<T>(path: string): RequestPromise<T> {
         return this.fetch<T>(`${ this.apiUrl }/${ path }`, {
             method: 'GET',
         });
@@ -65,8 +64,18 @@ export class TungenesApi {
 
 
 
-    public getArchiveData(timeUnit: TimeUnit, amount: number = 1): AbortablePromise<ArchiveData[]> {
+    public getArchiveData(timeUnit: TimeUnit, amount: number = 1): RequestPromise<ArchiveData[]> {
         return this.get(`archive/${ timeUnit }/${ amount > 0 ? amount : '' }`);
     }
+
+    public getHiLoData(timeUnit: TimeUnit, amount: number = 1): RequestPromise<HiLo> {
+        return this.get(`hilo/${ timeUnit }/${ amount > 0 ? amount : '' }`);
+    }
+
+    public getWindroseData(timeUnit: TimeUnit, amount: number = 1): RequestPromise<WindRoseData> {
+        return this.get(`windrose/${ timeUnit }/${ amount > 0 ? amount : '' }`);
+    }
+
+
 
 }

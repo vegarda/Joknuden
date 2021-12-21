@@ -2,12 +2,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewRef, Input } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Language, LanguageService } from 'src/app/services/language.service';
 import { ConsoleData } from '../console.service';
 
-enum Language {
-    Norwegian = 'no',
-    English = 'no',
-}
 
 @Component({
     selector: 'jok-wind-info',
@@ -22,10 +19,11 @@ export class WindInfoComponent {
     @Input() consoleData: ConsoleData;
 
 
-    private fromString = 'fra';
+    private fromString: string;
 
-    private language: Language = Language.Norwegian;
-    // private supportedLanguages: Language[] = [Language.English, Language.Norwegian];
+    public get language(): Language {
+        return this.languageService.language;
+    }
 
     private languages = window.navigator.languages;
     public intl: Intl.NumberFormat = new Intl.NumberFormat(this.languages[0], { maximumFractionDigits: 1 });
@@ -108,16 +106,33 @@ export class WindInfoComponent {
         }
     };
 
-    // constructor(props: IWindInfoProps) {
-    //         super(props);
-    //         // const language = window.navigator.languages.find(l => this.supportedLanguages.indexOf(l) >= 0);
-    //         // if (language) {
-    //         //         this.language = language;
-    //         // }
-    //         // if (this.language !== 'no') {
-    //         //         this.fromString = 'from';
-    //         // }
-    // }
+    constructor(
+        private languageService: LanguageService,
+    ) {
+
+        console.log('window.navigator.languages', window.navigator.languages);
+        console.log('window.navigator.language', window.navigator.language);
+
+        switch (this.language) {
+            default:
+            case Language.English: {
+                this.fromString = 'from';
+                break;
+            }
+            case Language.Norwegian: {
+                this.fromString = 'fra';
+                break;
+            }
+        }
+
+        // const language = window.navigator.languages.find(l => this.supportedLanguages.indexOf(l) >= 0);
+        // if (language) {
+        //         this.language = language;
+        // }
+        // if (this.language !== 'no') {
+        //         this.fromString = 'from';
+        // }
+    }
 
     // public render() {
 
@@ -150,12 +165,12 @@ export class WindInfoComponent {
     //         )
     // }
 
-    public getBeaufort() {
+    public getBeaufort(): string {
         const beaufortIndex = this.beaufort.windSpeed.findIndex(windSpeed => this.consoleData.windSpeed < windSpeed)
         return this.beaufort.description[this.language][beaufortIndex - 1];
     }
 
-    public getDirection() {
+    public getDirection(): string {
         let i = Math.floor((this.consoleData.windDir + 11.25) / 22.5);
         if (i > 15) {
             i = 0;

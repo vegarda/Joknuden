@@ -37,6 +37,7 @@
             </ng-container>
         </div>
 
+        <!--
         <div class="temp console-column">
             <ng-container
                     [ngTemplateOutlet]="propertyTemplate"
@@ -47,14 +48,17 @@
                         unit: temperatureConfig.unit
                     }"></ng-container>
         </div>
+         -->
 
         <jok-wind-compass [windDir]="_data.windDir" class="console-column"></jok-wind-compass>
 
         <jok-wind-info [consoleData]="_data" class="console-column"></jok-wind-info>
 
+        <!--
         <div class="webcam console-column">
             webcam
         </div>
+         -->
 
     </div>
 

@@ -16,7 +16,7 @@ export class TungenesApi {
         if (environment.production) {
             protocol = 'https';
             hostname = window.location.hostname;
-            port = 80;
+            port = 443;
         }
         else {
             protocol = 'http';

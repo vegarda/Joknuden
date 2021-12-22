@@ -9,6 +9,6 @@ eval $CREATE_SYMLINK_COMMAND;
 
 
 
-COPY_NGINX_CONFIG_COMMAND="cp -f $PWD/dist/joknuden.no.conf /etc/nginx/site-enabled";
+COPY_NGINX_CONFIG_COMMAND="cp -f $PWD/dist/joknuden.no.conf /etc/nginx/sites-enabled";
 echo $COPY_NGINX_CONFIG_COMMAND;
 eval $COPY_NGINX_CONFIG_COMMAND;

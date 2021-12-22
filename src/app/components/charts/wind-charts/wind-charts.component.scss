@@ -1,4 +1,4 @@
-@import "src/styles/material";
+@import "src/styles/material-colors";
 
 
 jok-chart {
@@ -29,7 +29,13 @@ jok-chart {
 }
 
 
-@media (max-width: 768px) {
+
+
+@media (max-width: 1024px) {
+
+    mat-card {
+        padding: 0.5em;
+    }
 
     .container {
         flex-direction: column;

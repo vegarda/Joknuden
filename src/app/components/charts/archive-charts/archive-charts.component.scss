@@ -18,3 +18,12 @@ jok-barometer-chart {
     height: 30em;
     display: flex;
 }
+
+
+
+@media screen and (max-width: 1024px) {
+
+    mat-card {
+        padding: 0.5em;
+    }
+}

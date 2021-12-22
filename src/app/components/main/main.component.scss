@@ -34,13 +34,21 @@ jok-console {
 
 @media screen and (max-width: 1024px) {
 
+    mat-card {
+        padding: 0.5em;
+    }
+
     jok-console {
         height: auto;
+    }
+
+    .asdasd {
+        padding: 0;
     }
 }
 
 
 
 .wwwwwwwwwfw {
-    margin: 0.5em;
+    // margin: 0.5em;
 }

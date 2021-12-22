@@ -56,7 +56,7 @@ export interface Route {
 
 export const routes: ReadonlyArray<Route> = [
     {
-        label: 'yestday',
+        label: 'yesterday',
         route: '/yesterday',
     },
     {

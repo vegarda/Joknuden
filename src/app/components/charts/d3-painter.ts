@@ -1,6 +1,13 @@
 import * as d3 from 'd3';
 import { KeysOfType } from 'src/app/types/types';
 
+interface Margins {
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
+}
+
 
 export class d3Painter<Datum = unknown> {
 
@@ -12,12 +19,12 @@ export class d3Painter<Datum = unknown> {
         return this.svgElement.clientHeight - this.margins.top - this.margins.bottom;
     }
 
-    public readonly margins = {
+    private margins = {
         top: 24,
-        right: 12,
+        right: 0,
         bottom: 36,
-        left: 12,
-    }
+        left: 0,
+    };
 
     private svg: d3.Selection<SVGSVGElement, Datum, null, never>;
 
@@ -30,8 +37,8 @@ export class d3Painter<Datum = unknown> {
         private svgElement: SVGSVGElement,
     ) {
         this.svg = d3.select(this.svgElement);
-        this.setDimensions();
         this.addMainContainer();
+        this.setDimensions();
     }
 
     private addMainContainer(): this {
@@ -41,8 +48,6 @@ export class d3Painter<Datum = unknown> {
         }
         const mainContainer = this.svg.append('g');
         mainContainer.attr('class', 'container');
-        const margin =  this.margins;
-        mainContainer.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
         this.mainContainer = mainContainer;
         return this;
     }
@@ -53,6 +58,8 @@ export class d3Painter<Datum = unknown> {
         const width = this.width;
         const height = this.height;
         const margins = this.margins;
+        const mainContainer = this.mainContainer;
+        mainContainer.attr('transform', 'translate(' + margins.left + ',' + margins.top + ')');
         svg.attr('width', width + margins.left + margins.right);
         svg.attr('height', height + margins.top + margins.bottom);
         svg.attr('viewBox', '0 0 ' + (width + margins.left + margins.right) + ' ' + (height + margins.top + margins.bottom));
@@ -76,11 +83,15 @@ export class d3Painter<Datum = unknown> {
     public resetSvg(): this {
         console.log('d3Painter.resetSvg()');
         this.clearSvg();
-        this.setDimensions();
         this.addMainContainer();
+        this.setDimensions();
         return this;
     }
 
+    public setMargins(margins: Margins): void {
+        this.margins = margins;
+        this.setDimensions();
+    }
 
 
     public setTimeScale(
@@ -200,8 +211,8 @@ export class d3Painter<Datum = unknown> {
         const axisBottomDomain = axisBottomGroup.selectAll('.domain');
         // axisBottomDomain.attr('style', 'color: transparent');
 
-        const axisBottomTickGroups = axisBottomGroup.selectAll('.tick');
-        axisBottomTickGroups.attr('class', 'tick-group');
+        const zeroTick = axisBottomGroup.select('[transform="translate(0,0)"]');
+        zeroTick.attr('text-anchor', 'start');
 
         // set axis bottom tick size
         const axisBottomLines = axisBottomGroup.selectAll('line');

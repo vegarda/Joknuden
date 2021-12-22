@@ -1,13 +1,8 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ArchiveData } from 'src/app/models/joknuden.models';
+import { ArchiveDataX } from 'src/app/models/joknuden.models';
 import { ChartComponent } from '../../chart/chart.component';
 import { ArchiveChartsService } from '../archive-charts.service';
-
-
-interface ArchiveDataX extends Omit<ArchiveData, 'dateTime'> {
-    dateTime: Date;
-}
 
 
 @Component({
@@ -34,10 +29,8 @@ export class BarometerChartComponent extends ChartComponent<ArchiveDataX> {
         this.timeProp="dateTime";
         this.unit="hPa";
 
-        this.archiveChartsService.archiveData$.subscribe(archiveData => {
-            this._data = archiveData.map(_ad => {
-                return Object.assign({}, _ad, { dateTime: new Date(_ad.dateTime * 1000) });
-            });
+        this.archiveChartsService.archiveDataX$.subscribe(archiveDataX => {
+            this._data = archiveDataX;
             this.draw();
         });
     }

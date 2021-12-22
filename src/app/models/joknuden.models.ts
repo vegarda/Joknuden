@@ -24,6 +24,12 @@ export interface ArchiveData {
     windSpeed: number;
 }
 
+
+export interface ArchiveDataX extends Omit<ArchiveData, 'dateTime'> {
+    dateTime: Date;
+}
+
+
 export interface WindRoseData {
     windFrequency: number[];
     windVector: number[];

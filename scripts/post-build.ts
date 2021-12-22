@@ -50,7 +50,16 @@ server {
         proxy_pass https://localhost:445/api;
     }
 
+    location /ws {
+        proxy_pass https://localhost:445/ws;
+        #proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+
 }
+
 `;
 
 // console.log(nginxSiteFile);

@@ -12,7 +12,7 @@ if (process.platform === 'win32') {
 }
 
 
-const distDirPath = `${ __dirname }/dist`;
+const distDirPath = `${ __dirname }/../dist`;
 
 const domainName = 'joknuden.no';
 
@@ -45,8 +45,8 @@ server {
 
 
 
-const serviceFilePath = `${ distDirPath }/${ nginxSiteFileName }`;
+const serviceFilePath = `${ distDirPath }/../${ nginxSiteFileName }`;
 fs.writeFileSync(serviceFilePath, nginxSiteFile);
 
-const copyServiceFilePath = `${ __dirname }/copy-config.sh`;
+const copyServiceFilePath = `${ __dirname }/../copy-config.sh`;
 fs.chmodSync(copyServiceFilePath, 0o665);

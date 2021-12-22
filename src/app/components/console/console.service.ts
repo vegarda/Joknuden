@@ -66,7 +66,7 @@ export class ConsoleService {
         const isSecureProtocol = location.protocol.includes('s');
         if (isSecureProtocol) {
             protocol = 'wss';
-            port = 80;
+            port = 443;
         }
         else {
             protocol = 'ws';

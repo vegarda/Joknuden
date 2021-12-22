@@ -3,6 +3,8 @@ import { ArchiveData, HiLo, TimeUnit, WindRoseData } from '../models/joknuden.mo
 import { RequestPromise } from '../utils/promise';
 import { environment } from './../../environments/environment';
 
+console.log('environment', environment);
+
 export class TungenesApi {
 
     private readonly apiUrl: string;

@@ -19,13 +19,20 @@ const domainName = 'joknuden.no';
 const nginxSiteFileName = `${ domainName }.conf`;
 
 const nginxSiteFile = `
+
 server {
 
     listen 80;
-    listen [::]:80;
+
+    server_name ${ domainName } www.${ domainName };
+
+    return 301 https://${ domainName }$request_uri;
+
+}
+
+server {
 
     listen 443 ssl;
-    listen [::]:443 ssl;
 
     ssl_certificate /etc/letsencrypt/live/${ domainName }/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${ domainName }/privkey.pem;
@@ -38,6 +45,11 @@ server {
     location / {
         try_files $uri $uri/ /index.html;
     }
+
+    location /api {
+        proxy_pass https://localhost:445/api;
+    }
+
 }
 `;
 

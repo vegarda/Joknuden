@@ -63,6 +63,7 @@ export class WindChartsComponent implements OnInit {
         console.log('windFrequency', this.windFrequency);
         if (this.chartComponents) {
             this.chartComponents.forEach(cc => {
+                cc.resetSvg();
                 cc.drawWindrose();
             });
         }

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "allowJs": true,
+      "lib": [
+        "ESNext",
+      ],
+      "target": "ES2019",
+      "module": "CommonJS",
+      "moduleResolution": "Node",
+      "types": [
+        "node"
+      ]
+    }
+  }

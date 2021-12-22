@@ -73,7 +73,7 @@ export class ConsoleService {
             port = 8080;
         }
 
-        this._socket = new WebSocket(`${ protocol }://${ location.hostname }:${ port }/`);
+        this._socket = new WebSocket(`${ protocol }://${ location.hostname }:${ port }/ws`);
 
         this._socket.addEventListener('open', (test: any) => {
             this.webSocketReconnectTime = 1000;

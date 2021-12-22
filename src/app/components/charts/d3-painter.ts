@@ -13,10 +13,10 @@ export class d3Painter<Datum = unknown> {
     }
 
     public readonly margins = {
-        top: 12,
-        right: 84,
+        top: 24,
+        right: 12,
         bottom: 36,
-        left: 36,
+        left: 12,
     }
 
     private svg: d3.Selection<SVGSVGElement, Datum, null, never>;
@@ -26,44 +26,20 @@ export class d3Painter<Datum = unknown> {
     private timeScale: d3.ScaleTime<number, number, never>;
     private valueScale: d3.ScaleLinear<number, number, never>;
 
-    private axisLeft: d3.Axis<d3.NumberValue>;
-    private axisRight: d3.Axis<d3.NumberValue>;
-
     constructor(
         private svgElement: SVGSVGElement,
     ) {
         this.svg = d3.select(this.svgElement);
+        this.setDimensions();
+        this.addMainContainer();
     }
 
-    public clearSvg(): this {
-        console.log('d3Painter.clearSvg()');
-        this.mainContainer = null;
-        this.timeScale = null;
-        this.valueScale = null;
-        this.axisLeft = null;
-        this.axisRight = null;
-        if (!this.svg) {
-            return this;
-        }
-        this.svg.selectAll('*').remove();
-        this.svg.attr('width', null);
-        this.svg.attr('height', null);
-        this.svg.attr('viewBox', null);
-        this.svg.attr('preserveAspectRatio', null);
-        this.setSvgMargins();
-        return this;
-    }
-
-    protected addMainContainer(): this {
+    private addMainContainer(): this {
         console.log('d3Painter.addMainContainer()');
-        // if (this.mainContainer) {
-        //     return this;
-        // }
-        const svg = this.svg;
-        if (!svg) {
+        if (this.mainContainer) {
             return this;
         }
-        const mainContainer = svg.append('g');
+        const mainContainer = this.svg.append('g');
         mainContainer.attr('class', 'container');
         const margin =  this.margins;
         mainContainer.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -71,12 +47,9 @@ export class d3Painter<Datum = unknown> {
         return this;
     }
 
-    protected setSvgMargins(): this {
-        console.log('d3Painter.setSvgMargins()');
+    private setDimensions(): this {
+        console.log('d3Painter.setDimensions()');
         const svg = this.svg;
-        if (!svg) {
-            return this;
-        }
         const width = this.width;
         const height = this.height;
         const margins = this.margins;
@@ -84,26 +57,29 @@ export class d3Painter<Datum = unknown> {
         svg.attr('height', height + margins.top + margins.bottom);
         svg.attr('viewBox', '0 0 ' + (width + margins.left + margins.right) + ' ' + (height + margins.top + margins.bottom));
         svg.attr('preserveAspectRatio', 'xMidYMid');
-
         return this;
+    }
 
+    public clearSvg(): this {
+        console.log('d3Painter.clearSvg()');
+        this.mainContainer = null;
+        this.timeScale = null;
+        this.valueScale = null;
+        this.svg.selectAll('*').remove();
+        this.svg.attr('width', null);
+        this.svg.attr('height', null);
+        this.svg.attr('viewBox', null);
+        this.svg.attr('preserveAspectRatio', null);
+        return this;
     }
 
     public resetSvg(): this {
         console.log('d3Painter.resetSvg()');
         this.clearSvg();
-        this.setSvgMargins();
+        this.setDimensions();
         this.addMainContainer();
         return this;
     }
-
-    private prepareSvg(): void {
-        console.log('d3Painter.prepareSvg()');
-        if (!this.mainContainer) {
-            this.resetSvg();
-        }
-    }
-
 
 
 
@@ -119,8 +95,6 @@ export class d3Painter<Datum = unknown> {
             console.warn('datum', datum);
             return this;
         }
-
-        this.prepareSvg();
 
         const width = this.width;
         const height = this.height;
@@ -274,14 +248,14 @@ export class d3Painter<Datum = unknown> {
 
     }
 
-    public setAxisRight(
+    public setYAxisText(
         datum: Datum[],
         minProp: KeysOfType<Datum, number>,
         maxProp: KeysOfType<Datum, number>,
         unit: string = '',
     ): this {
 
-        console.log('d3Painter.setAxisRight()');
+        console.log('d3Painter.setYAxisText()');
 
         if (!minProp || !minProp || !Array.isArray(datum) || datum.length === 0) {
             console.warn('minProp', minProp);
@@ -305,32 +279,124 @@ export class d3Painter<Datum = unknown> {
         axisRight.ticks(6);
         axisRight.tickFormat(yAxisTickFormat);
 
-        this.axisRight = axisRight;
+        // this.axisRight = axisRight;
 
         const yAxisGroup = mainContainer.append('g');
-        yAxisGroup.attr('class', 'axis y-axis');
+        yAxisGroup.attr('class', 'axis y-axis axis-text');
         yAxisGroup.attr('transform', 'translate(' + (width) + ', 0)');
         yAxisGroup.call(axisRight);
         yAxisGroup.attr('font-size', null);
         yAxisGroup.attr('font-family', null);
-        yAxisGroup.style('shape-rendering', 'crispedges')
+        yAxisGroup.style('shape-rendering', 'crispedges');
 
-        const yAxisGroupTicks = yAxisGroup.selectAll('.tick');
-        yAxisGroupTicks.attr('class', 'tick-group');
+        yAxisGroup.select('.domain').remove();
 
         const yAxisGroupTexts = yAxisGroup.selectAll('text');
-        yAxisGroupTexts.attr('x', '1em');
-        // yAxisGroupTexts.attr('dy', '0.5em');
+        yAxisGroupTexts.attr('x', '-0.25em');
+        yAxisGroupTexts.attr('dy', '-0.25em');
+        yAxisGroupTexts.attr('text-anchor', 'end');
 
-        // set y-axis tick size/width
         const yAxisLines = yAxisGroup.selectAll('line');
-        yAxisLines.attr('x1', -width);
-        yAxisLines.attr('x2', '0.5em');
+        yAxisLines.remove();
 
         return this;
 
     }
 
+
+    public setYAxisLines(
+        datum: Datum[],
+        minProp: KeysOfType<Datum, number>,
+        maxProp: KeysOfType<Datum, number>,
+        unit: string = '',
+    ): this {
+
+        console.log('d3Painter.setYAxisLines()');
+
+        if (!minProp || !minProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('minProp', minProp);
+            console.warn('maxProp', maxProp);
+            console.warn('datum', datum);
+            return this;
+        }
+
+        if (!this.valueScale) {
+            this.setValueScale(datum, minProp, maxProp);
+        }
+
+        // if (!this.axisRight) {
+        //     this.setAxisRight(datum, minProp, maxProp, unit);
+        // }
+
+        const mainContainer = this.mainContainer
+        const width = this.width;
+
+        const axisRight = d3.axisRight(this.valueScale);
+        axisRight.tickSize(0);
+        axisRight.ticks(6);
+
+        const yAxisLinesGroup = mainContainer.append('g');
+        yAxisLinesGroup.attr('class', 'axis y-axis');
+        yAxisLinesGroup.attr('transform', 'translate(' + (width) + ', 0)');
+        yAxisLinesGroup.call(axisRight);
+        yAxisLinesGroup.attr('font-size', null);
+        yAxisLinesGroup.attr('font-family', null);
+        yAxisLinesGroup.style('shape-rendering', 'crispedges');
+
+        yAxisLinesGroup.select('.domain').remove();
+
+        const yAxisGroupTexts = yAxisLinesGroup.selectAll('text');
+        yAxisGroupTexts.remove();
+
+        const yAxisLines = yAxisLinesGroup.selectAll('line');
+        yAxisLines.attr('x1', -width);
+
+        return this;
+
+    }
+
+    public addLine(
+        datum: Datum[],
+        prop: KeysOfType<Datum, number>,
+        timeProp: KeysOfType<Datum, Date>,
+    ): this {
+
+        console.log('d3Painter.addLine()');
+
+        if (!prop || !timeProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('prop', prop);
+            console.warn('timeProp', timeProp);
+            console.warn('datum', datum);
+            return this;
+        }
+
+        if (!this.timeScale) {
+            this.setTimeScale(datum, timeProp);
+        }
+
+        if (!this.valueScale) {
+            this.setValueScale(datum, prop, prop);
+        }
+
+        const line = d3.line<any>();
+        line.curve(d3.curveCatmullRom);
+        line.x(d => this.timeScale(d[timeProp]));
+        line.y(d => {
+            // console.log(d[prop], this.valueScale(d[prop]))
+            return this.valueScale(d[prop]);
+        });
+
+        const mainContainer = this.mainContainer;
+        const graphGroup = mainContainer.append('g');
+        graphGroup.attr('class', 'graph line');
+
+        const path = graphGroup.append('path').datum(datum);
+        path.attr('d', line)
+        path.attr('class', 'line');
+
+        return this;
+
+    }
 
     public drawLine(
         datum: Datum[],
@@ -348,51 +414,22 @@ export class d3Painter<Datum = unknown> {
             return this;
         }
 
-
-        this.prepareSvg();
-        this.setTimeScale(datum, timeProp);
-
-        const mainContainer = this.mainContainer
-
-
-        if (!this.valueScale) {
-            this.setValueScale(datum, prop, prop);
-        }
-
-        if (!this.axisRight) {
-            this.setAxisRight(datum, prop, prop, unit);
-        }
-
-        const line = d3.line<any>();
-        line.curve(d3.curveCatmullRom);
-        line.x(d => this.timeScale(d[timeProp]));
-        line.y(d => {
-            // console.log(d[prop], this.valueScale(d[prop]))
-            return this.valueScale(d[prop]);
-        });
-
-        const graphGroup = mainContainer.append('g');
-        graphGroup.attr('class', 'graph line');
-
-        const path = graphGroup.append('path').datum(datum);
-        path.attr('d', line)
-        path.attr('class', 'line');
+        this.setYAxisLines(datum, prop, prop);
+        this.addLine(datum, prop, timeProp);
+        this.setYAxisText(datum, prop, prop, unit);
 
         return this;
-
 
     }
 
 
 
 
-
-    public drawArea(
+    public addArea(
         datum: Datum[],
         minProp: KeysOfType<Datum,number>,
         maxProp: KeysOfType<Datum, number>,
         timeProp: KeysOfType<Datum, Date>,
-        unit: string = '',
     ): this {
 
         console.log('d3Painter.drawArea()');
@@ -405,18 +442,13 @@ export class d3Painter<Datum = unknown> {
             return this;
         }
 
-        this.prepareSvg();
-        this.setTimeScale(datum, timeProp);
-
+        if (!this.timeScale) {
+            this.setTimeScale(datum, timeProp);
+        }
 
         if (!this.valueScale) {
             this.setValueScale(datum, minProp, maxProp);
         }
-
-        if (!this.axisRight) {
-            this.setAxisRight(datum, minProp, maxProp, unit);
-        }
-
 
         const area = d3.area<Datum>();
         area.curve(d3.curveCatmullRom);
@@ -425,38 +457,46 @@ export class d3Painter<Datum = unknown> {
         area.y1(d => this.valueScale(d[maxProp] as any as number));
 
         const mainContainer = this.mainContainer;
-
         const graphGroup = mainContainer.append('g');
         graphGroup.attr('class', 'graph area');
 
-        /*
-
-        const linearGradient = graphGroup.append('linearGradient');
-        linearGradient.attr('id', 'outTempAreaGradient');
-        linearGradient.attr('gradientUnits', 'userSpaceOnUse');
-        linearGradient.attr('x1', 0).attr('y1', this.valueScale(-15));
-        linearGradient.attr('x2', 0).attr('y2', this.valueScale(25));
-
-        const gradientStops = [
-            { offset: '0%', color: '#2222ffdd' },
-            { offset: '18.75%', color: '#2222ffaa' },
-            { offset: '37.5%', color: '#cccccccc' },
-            { offset: '56.25%', color: '#ff2222aa' },
-            { offset: '100%', color: '#ff2222dd' },
-        ];
-
-        gradientStops.forEach(gradientStops => {
-            const stop = linearGradient.append('stop');
-            stop.attr('offset', gradientStops.offset);
-            stop.attr('stop-color', gradientStops.color);
-        });
-
-        */
-
         const path = graphGroup.append('path').datum(datum);
         path.attr('d', area);
-        // .style('fill', 'url(#outTempAreaGradient)')
         path.attr('class', 'area');
+
+        return this;
+
+    }
+
+    public drawArea(
+        datum: Datum[],
+        minProp: KeysOfType<Datum,number>,
+        maxProp: KeysOfType<Datum, number>,
+        timeProp: KeysOfType<Datum, Date>,
+    ): this {
+
+        console.log('d3Painter.drawArea()');
+
+        if (!minProp || !minProp || !timeProp || !Array.isArray(datum) || datum.length === 0) {
+            console.warn('timeProp', timeProp);
+            console.warn('minProp', minProp);
+            console.warn('maxProp', maxProp);
+            console.warn('datum', datum);
+            return this;
+        }
+
+        if (!this.timeScale) {
+            this.setTimeScale(datum, timeProp);
+        }
+
+        if (!this.valueScale) {
+            this.setValueScale(datum, minProp, maxProp);
+        }
+        // if (!this.axisRight) {
+        //     this.setAxisRight(datum, minProp, maxProp, unit);
+        // }
+
+        this.addArea(datum, minProp, maxProp, timeProp);
 
         return this;
 

@@ -16,7 +16,7 @@ import { WindInfoComponent } from './components/console/wind-info/wind-info.comp
 import { TungenesApi } from './api/tungenes-api';
 
 import { TemperatureChartComponent } from './components/charts/archive-charts/temperature-chart/temperature-chart.component';
-import { ChartComponent } from './components/charts/chart.component';
+import { ChartComponent } from './components/charts/chart/chart.component';
 import { ArchiveChartsComponent } from './components/charts/archive-charts/archive-charts.component';
 import { ArchiveChartsService } from './components/charts/archive-charts/archive-charts.service';
 import { FooterComponent } from './components/footer/footer.component';

@@ -79,14 +79,14 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "joknuden-ng:build"
+                        "browserTarget": "joknuden:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "joknuden-ng:build:production"
+                            "browserTarget": "joknuden:build:production"
                         },
                         "development": {
-                            "browserTarget": "joknuden-ng:build:development"
+                            "browserTarget": "joknuden:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -132,11 +132,11 @@
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
                         "protractorConfig": "e2e/protractor.conf.js",
-                        "devServerTarget": "joknuden-ng:serve"
+                        "devServerTarget": "joknuden:serve"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "joknuden-ng:serve:production"
+                            "devServerTarget": "joknuden:serve:production"
                         }
                     }
                 }

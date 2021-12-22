@@ -1,8 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ArchiveData } from 'src/app/models/joknuden.models';
-import { ChartComponent } from '../../chart.component';
+import { ChartComponent } from '../../chart/chart.component';
 import { ArchiveChartsService } from '../archive-charts.service';
+
 
 interface ArchiveDataX extends Omit<ArchiveData, 'dateTime'> {
     dateTime: Date;
@@ -11,30 +12,33 @@ interface ArchiveDataX extends Omit<ArchiveData, 'dateTime'> {
 
 @Component({
     selector: 'jok-barometer-chart',
-    template: `<jok-chart [data]="archiveData" prop="barometer" timeProp="dateTime" unit="hPa"></jok-chart>`,
-    styleUrls: ['barometer-chart.component.scss'],
+    templateUrl: '../../chart/chart.component.html',
+    styleUrls: [
+        '../../chart/chart.component.scss',
+        'barometer-chart.component.scss',
+    ],
 })
-export class BarometerChartComponent {
-
-    @ViewChild(ChartComponent, { static: true })
-    private chartComponent: ChartComponent;
-
-    private _archiveDataX: ArchiveDataX[] = [];
-    public get archiveData(): ArchiveDataX[] {
-        return this._archiveDataX;
-    }
+export class BarometerChartComponent extends ChartComponent<ArchiveDataX> {
 
     private onDestroy$ = new Subject();
 
     constructor(
         private archiveChartsService: ArchiveChartsService,
-    ) { }
+    ) {
+        super();
+    }
 
     public ngOnInit(): void {
+
+        this.prop="barometer";
+        this.timeProp="dateTime";
+        this.unit="hPa";
+
         this.archiveChartsService.archiveData$.subscribe(archiveData => {
-            this._archiveDataX = archiveData.map(_ad => {
+            this._data = archiveData.map(_ad => {
                 return Object.assign({}, _ad, { dateTime: new Date(_ad.dateTime * 1000) });
             });
+            this.draw();
         });
     }
 
@@ -43,12 +47,22 @@ export class BarometerChartComponent {
         this.onDestroy$.complete();
     }
 
+    public ngAfterViewInit(): void {
+        super.ngAfterViewInit();
+        this.draw();
+    }
 
-    private draw(): void {
-        if (!this.chartComponent) {
+    protected draw(): void {
+        console.log('BarometerChartComponent.draw()');
+        if (!this.d3Painter) {
+            console.warn('!this.d3Painter');
             return;
         }
-        this.chartComponent.drawLine();
+        this.resetSvg();
+        this.setTimeScale();
+        this.setYAxisLines();
+        this.addLine();
+        this.setYAxisText();
     }
 
 

@@ -1,7 +1,7 @@
 
 import { ChangeDetectorRef, Component, OnInit, QueryList, ViewChild, ViewChildren, ViewRef } from '@angular/core';
 import { WindRoseData } from 'src/app/models/joknuden.models';
-import { ChartComponent } from '../chart.component';
+import { ChartComponent } from '../chart/chart.component';
 import { WindChartsService } from './wind-charts.service';
 
 

@@ -60,7 +60,7 @@ jobs:
       - run: docker image ls
       - run: docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
       #- run: docker buildx build --push --tag=vegarda/joknuden:latest --platform "$BUILDX_PLATFORMS" .
-      - run: docker buildx build --platform "$BUILDX_PLATFORMS" .
+      - run: docker buildx build -t dddddddddd --platform "$BUILDX_PLATFORMS" .
       - run: ls
       # - run:
       #     name: Build application Docker image

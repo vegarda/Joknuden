@@ -43,8 +43,9 @@ jobs:
             # Run binfmt
             docker run --rm --privileged tonistiigi/binfmt:latest --install "$BUILDX_PLATFORMS"
 
-            docker context create buildcontext
-            docker buildx create buildcontext --use
+            #docker context create joknuden
+            docker buildx create joknuden
+            docker buildx use joknuden
 
       - run: docker buildx version
       - restore_cache:
@@ -59,7 +60,7 @@ jobs:
           name: Build application Docker image
           command: |
             #docker build --cache-from=joknuden -t joknuden .
-            docker buildx build --cache-from=joknuden -t vegarda/joknuden:latest --platform "$BUILDX_PLATFORMS" .
+            docker buildx build --cache-from=joknuden --platform "$BUILDX_PLATFORMS" .
     #   - run:
     #       name: Save Docker image layer cache
     #       command: |

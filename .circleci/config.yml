@@ -45,9 +45,9 @@ jobs:
 
       - run: docker buildx version
       - run: docker buildx ls
-      #- run: docker context create mycontext
-      #- run: docker buildx create --name mybuilder --use
-      - run: docker buildx create --name multiarch-builder --driver docker-container --use tls-environment
+      - run: docker context create mycontext
+      - run: docker buildx create --name mybuilder --use mycontext
+      # - run: docker buildx create --name multiarch-builder --driver docker-container --use mycontext
       - run: docker buildx inspect --bootstrap
       - restore_cache:
           keys:

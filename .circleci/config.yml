@@ -43,17 +43,10 @@ jobs:
             # Run binfmt
             docker run --rm --privileged tonistiigi/binfmt:latest --install "$BUILDX_PLATFORMS"
 
-            docker buildx ls
-            docker buildx create --name joknuden joknuden --use
-            docker buildx ls
-
-            #docker buildx create --name mybuilder
-            #docker buildx use mybuilder
-            docker buildx create --name mybuilder --use
-
-            #docker buildx use joknuden
-
       - run: docker buildx version
+      - run: docker buildx ls
+      - run: docker buildx create --name mybuilder --use
+      - run: docker buildx inspect --bootstrap
       - restore_cache:
           keys:
             - v1-{{ .Branch }}

@@ -16,7 +16,6 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          #version: 19.03.13
           version: 20.10.7
           #docker_layer_caching: true
 
@@ -47,7 +46,6 @@ jobs:
       - run: docker buildx ls
       - run: docker context create mycontext
       - run: docker buildx create --name mybuilder --use mycontext
-      # - run: docker buildx create --name multiarch-builder --driver docker-container --use mycontext
       - run: docker buildx inspect --bootstrap
       - restore_cache:
           keys:
@@ -57,23 +55,14 @@ jobs:
           command: |
             set +o pipefail
             docker load -i /caches/joknuden.tar | true
-      - run: docker image ls
-      # - run: docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
-      #- run: docker buildx build --push --tag=vegarda/joknuden:latest --platform "$BUILDX_PLATFORMS" .
-      - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" .
-      # - run:
-      #     name: Build application Docker image
-      #     command: |
-      #       #docker build --cache-from=joknuden -t joknuden .
-      #       #docker buildx build --cache-from=joknuden --platform "$BUILDX_PLATFORMS" .
-      #       # docker buildx build -t joknuden --platform "$BUILDX_PLATFORMS" .
-      #       docker buildx build --tag=test123 --platform "$BUILDX_PLATFORMS" .
       - run: docker images -a
-    #   - run:
-    #       name: Save Docker image layer cache
-    #       command: |
-    #         mkdir -p /caches
-    #         docker save -o /caches/joknuden.tar joknuden
+      - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" .
+      - run: docker images -a
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/joknuden.tar joknuden
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:

@@ -58,7 +58,8 @@ jobs:
             set +o pipefail
             docker load -i /caches/joknuden.tar | true
       - run: docker image ls
-      - run: docker buildx build --tag=test:asd --platform "$BUILDX_PLATFORMS" .
+      - run: docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
+      - run: docker buildx build --push --tag=test:asd --platform "$BUILDX_PLATFORMS" .
       # - run:
       #     name: Build application Docker image
       #     command: |

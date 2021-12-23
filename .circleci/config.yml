@@ -69,7 +69,7 @@ jobs:
             #docker build --cache-from=joknuden -t joknuden .
             #docker buildx build --cache-from=joknuden --platform "$BUILDX_PLATFORMS" .
             # docker buildx build -t joknuden --platform "$BUILDX_PLATFORMS" .
-            docker buildx build --platform "$BUILDX_PLATFORMS" .
+            docker buildx build --push --platform "$BUILDX_PLATFORMS" .
     #   - run:
     #       name: Save Docker image layer cache
     #       command: |

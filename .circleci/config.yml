@@ -1,39 +1,52 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
+
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build:
     working_directory: ~/joknuden
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    environment:
+      DOCKER_BUILDKIT: 1
+      #BUILDX_PLATFORMS: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6
+      BUILDX_PLATFORMS: linux/arm64
     docker:
       - image: cimg/node:lts
         auth:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_ACCESS_TOKEN
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.13
-          docker_layer_caching: true
-      #- run: npm run build
-    #   - run:
-    #       name: Install dependencies
-    #       command: |
-    #         apk add --no-cache \
-    #           py-pip=9.0.0-r1
-    #         pip install \
-    #           docker-compose==1.12.0
+          #version: 19.03.13
+          version: 20.10.7
+          #docker_layer_caching: true
+
+    #   - run: apk add make curl
+    #   - run: mkdir -vp ~/.docker/cli-plugins/
+    #   - run: curl --silent -L --output ~/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64
+    #   - run: chmod a+x ~/.docker/cli-plugins/docker-buildx
+    #   - run: docker buildx version
+      - run:
+          name: Install buildx
+          command: |
+            BUILDX_BINARY_URL="https://github.com/docker/buildx/releases/download/v0.7.1/buildx-v0.7.1.linux-amd64"
+
+            curl --output docker-buildx \
+              --silent --show-error --location --fail --retry 3 \
+              "$BUILDX_BINARY_URL"
+
+            mkdir -p ~/.docker/cli-plugins
+
+            mv docker-buildx ~/.docker/cli-plugins/
+            chmod a+x ~/.docker/cli-plugins/docker-buildx
+
+            docker buildx install
+            # Run binfmt
+            docker run --rm --privileged tonistiigi/binfmt:latest --install "$BUILDX_PLATFORMS"
+
+      - run: docker buildx version
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
-          paths:
-            - /caches/joknuden.tar
       - run:
           name: Load Docker image layer cache
           command: |
@@ -52,16 +65,12 @@ jobs:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/joknuden.tar
-    #   - run:
-    #       name: Run tests
-    #       command: |
-    #         docker-compose -f ./docker-compose.test.yml up
       - deploy:
           name: Push application Docker image
           command: |
             docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
-            docker tag joknuden "vegarda/joknuden:${CIRCLE_SHA1}"
-            docker push "vegarda/joknuden:${CIRCLE_SHA1}"
+            # docker tag joknuden "vegarda/joknuden:${CIRCLE_SHA1}"
+            # docker push "vegarda/joknuden:${CIRCLE_SHA1}"
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker tag joknuden "vegarda/joknuden:latest"
               docker push "vegarda/joknuden:latest"
@@ -69,8 +78,6 @@ jobs:
 
 
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build-workflow:
     jobs:

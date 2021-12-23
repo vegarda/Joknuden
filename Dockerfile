@@ -12,8 +12,6 @@ COPY . ./
 #FROM nginx:stable-alpine
 FROM nginx:mainline-alpine
 
-#RUN apk add --no-cache rsync
-
 #COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 #COPY conf/ /
 #COPY docker-entrypoint.sh /

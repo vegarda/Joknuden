@@ -60,7 +60,7 @@ jobs:
           name: Push application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login -u "${$DOCKER_HUB_USERNAME}" -p "${$DOCKER_HUB_ACCESS_TOKEN}"
+              docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
               docker tag joknuden "vegarda/joknuden:${CIRCLE_SHA1}"
               docker push "vegarda/joknuden:${CIRCLE_SHA1}"
             fi

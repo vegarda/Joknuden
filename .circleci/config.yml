@@ -59,7 +59,9 @@ jobs:
             docker load -i /caches/joknuden.tar | true
       - run: docker image ls
       - run: docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
-      - run: docker buildx build --push --tag=vegarda/joknuden:latest --platform "$BUILDX_PLATFORMS" .
+      #- run: docker buildx build --push --tag=vegarda/joknuden:latest --platform "$BUILDX_PLATFORMS" .
+      - run: docker buildx build --platform "$BUILDX_PLATFORMS" .
+      - run: ls
       # - run:
       #     name: Build application Docker image
       #     command: |
@@ -77,16 +79,16 @@ jobs:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/joknuden.tar
-      - deploy:
-          name: Push application Docker image
-          command: |
-            docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
-            # docker tag joknuden "vegarda/joknuden:${CIRCLE_SHA1}"
-            # docker push "vegarda/joknuden:${CIRCLE_SHA1}"
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker tag joknuden vegarda/joknuden:latest
-              docker push vegarda/joknuden:latest
-            fi
+      # - deploy:
+      #     name: Push application Docker image
+      #     command: |
+      #       docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_ACCESS_TOKEN}"
+      #       # docker tag joknuden "vegarda/joknuden:${CIRCLE_SHA1}"
+      #       # docker push "vegarda/joknuden:${CIRCLE_SHA1}"
+      #       if [ "${CIRCLE_BRANCH}" == "master" ]; then
+      #         docker tag joknuden vegarda/joknuden:latest
+      #         docker push vegarda/joknuden:latest
+      #       fi
 
 
 

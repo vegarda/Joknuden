@@ -60,8 +60,8 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u "${$DOCKER_HUB_USERNAME}" -p "${$DOCKER_HUB_ACCESS_TOKEN}"
-              docker tag app "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
-              docker push "${ECR_ENDPOINT}/app:${CIRCLE_SHA1}"
+              docker tag joknuden "vegarda/joknuden:${CIRCLE_SHA1}"
+              docker push "vegarda/joknuden:${CIRCLE_SHA1}"
             fi
 
 

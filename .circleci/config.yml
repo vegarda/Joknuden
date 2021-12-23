@@ -45,6 +45,7 @@ jobs:
 
       - run: docker buildx version
       - run: docker buildx ls
+      - run: docker context create mycontext
       - run: docker buildx create --name mybuilder --use
       - run: docker buildx inspect --bootstrap
       - restore_cache:

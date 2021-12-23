@@ -43,6 +43,7 @@ jobs:
             # Run binfmt
             docker run --rm --privileged tonistiigi/binfmt:latest --install "$BUILDX_PLATFORMS"
 
+            docker context ls
             #docker context create joknuden
             docker buildx create joknuden
             docker buildx use joknuden

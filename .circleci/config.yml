@@ -50,6 +50,7 @@ jobs:
             docker buildx ls
             docker buildx create --name joknuden joknuden --use
             docker buildx ls
+            docker buildx inspect joknuden
 
             #docker buildx use joknuden
 
@@ -67,7 +68,8 @@ jobs:
           command: |
             #docker build --cache-from=joknuden -t joknuden .
             #docker buildx build --cache-from=joknuden --platform "$BUILDX_PLATFORMS" .
-            docker buildx build -t joknuden --platform "$BUILDX_PLATFORMS" .
+            # docker buildx build -t joknuden --platform "$BUILDX_PLATFORMS" .
+            docker buildx build --platform "$BUILDX_PLATFORMS" .
     #   - run:
     #       name: Save Docker image layer cache
     #       command: |

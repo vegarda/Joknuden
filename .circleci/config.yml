@@ -45,8 +45,8 @@ jobs:
 
             docker context ls
             #docker context create joknuden
-            docker buildx create joknuden
-            docker buildx use joknuden
+            docker buildx create joknuden --use
+            #docker buildx use joknuden
 
       - run: docker buildx version
       - restore_cache:

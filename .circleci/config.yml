@@ -56,10 +56,10 @@ jobs:
             set +o pipefail
             docker load -i /caches/joknuden.tar | true
       - run: docker images -a
+      - run: ls -lah
+      - run: cat ./Dockerfile
       - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" -f ./Dockerfile .
       - run: docker images -a
-      - run: ls -lah
-      - run: cat Dockerfile
       # - run:
       #     name: Save Docker image layer cache
       #     command: |

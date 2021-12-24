@@ -16,7 +16,7 @@ export class AppComponent {
         private routingService: RoutingService,
         private appService: AppService,
     ) {
-        console.log('AppComponent', this);
+        console.log('AppComponent ', this);
 
         this.appService.action$.subscribe(action => {
             switch(action) {

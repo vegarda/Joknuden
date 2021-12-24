@@ -60,6 +60,7 @@ jobs:
       - run: cat ./Dockerfile
       - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" -f ./Dockerfile .
       - run: docker images -a
+      - run: docker buildx imagetools inspect joknuden
       # - run:
       #     name: Save Docker image layer cache
       #     command: |

@@ -13,8 +13,6 @@ RUN npm run build
 FROM nginx:mainline-alpine
 
 #COPY --from=build /usr/src/app/dist /usr/share/nginx/html
-#COPY conf/ /
-#COPY docker-entrypoint.sh /
 
 ARG BUILD_DATE
 ARG VCS_REF

@@ -58,6 +58,7 @@ jobs:
       - run: docker images -a
       - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" .
       - run: docker images -a
+      - run: ls -lah
       # - run:
       #     name: Save Docker image layer cache
       #     command: |

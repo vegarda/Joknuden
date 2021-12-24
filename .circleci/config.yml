@@ -43,10 +43,10 @@ jobs:
             docker run --rm --privileged tonistiigi/binfmt:latest --install "$BUILDX_PLATFORMS"
 
       - run: docker buildx version
-      - run: docker buildx ls
       - run: docker context create mycontext
       - run: docker buildx create --name mybuilder --use mycontext
       - run: docker buildx inspect --bootstrap
+      - run: docker buildx ls
       # - restore_cache:
       #     keys:
       #       - v1-{{ .Branch }}

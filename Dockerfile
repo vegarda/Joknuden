@@ -2,10 +2,16 @@ FROM node:16 AS build
 
 WORKDIR /usr/src/app
 
+RUN ls -lah
 COPY package.json ./
+RUN ls -lah
+
 RUN npm install
 
+RUN ls -lah
 COPY . ./
+RUN ls -lah
+
 RUN npm run build
 
 #FROM nginx:alpine

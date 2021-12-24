@@ -60,7 +60,7 @@ jobs:
       - run: cat ./Dockerfile
       - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" -f ./Dockerfile .
       - run: docker images -a
-      - run: docker buildx imagetools inspect joknuden:latest
+      - run: docker buildx imagetools inspect vegarda/joknuden:latest
       # - run:
       #     name: Save Docker image layer cache
       #     command: |
@@ -80,6 +80,7 @@ jobs:
               docker tag joknuden vegarda/joknuden:latest
               docker push vegarda/joknuden:latest
             fi
+      - run: docker buildx imagetools inspect vegarda/joknuden:latest
 
 
 

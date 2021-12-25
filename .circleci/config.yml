@@ -58,7 +58,7 @@ jobs:
       - run: docker images -a
       - run: ls -lah
       - run: cat ./Dockerfile
-      - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" -f ./Dockerfile .
+      - run: docker buildx build -t joknuden --load --platform "$BUILDX_PLATFORMS" --progress=plain --no-cache .
       - run: docker images -a
       - run: docker buildx imagetools inspect vegarda/joknuden:latest
       # - run:

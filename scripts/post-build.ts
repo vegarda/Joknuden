@@ -69,6 +69,3 @@ server {
 const serviceFilePath = `${ distDirPath }/${ nginxSiteFileName }`;
 console.log(serviceFilePath);
 fs.writeFileSync(serviceFilePath, nginxSiteFile);
-
-const copyServiceFilePath = `${ __dirname }/../copy-config.sh`;
-fs.chmodSync(copyServiceFilePath, 0o775);

@@ -1,0 +1,15 @@
+@import "src/styles/material-colors";
+
+:host {
+
+    ::ng-deep {
+
+        .graph {
+
+            path {
+                stroke: $material-pink-900;
+            }
+        }
+    }
+}
+

@@ -26,6 +26,7 @@ import { WindChartsComponent } from './components/charts/wind-charts/wind-charts
 import { WindChartsService } from './components/charts/wind-charts/wind-charts.service';
 import { HeaderComponent } from './components/header/header.component';
 import { FormsModule } from '@angular/forms';
+import { WindChartComponent } from './components/charts/archive-charts/wind-chart/wind-chart.component';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { FormsModule } from '@angular/forms';
         ChartComponent,
 
         TemperatureChartComponent,
+        WindChartComponent,
         BarometerChartComponent,
 
         ArchiveChartsComponent,

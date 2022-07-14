@@ -5,17 +5,15 @@ import { ChartComponent } from '../../chart/chart.component';
 import { ArchiveChartsService } from '../archive-charts.service';
 
 
-
-
 @Component({
-    selector: 'jok-temperature-chart',
+    selector: 'jok-wind-chart',
     templateUrl: '../../chart/chart.component.html',
     styleUrls: [
         '../../chart/chart.component.scss',
-        'temperature-chart.component.scss',
+        'wind-chart.component.scss',
     ],
 })
-export class TemperatureChartComponent extends ChartComponent<ArchiveDataX> {
+export class WindChartComponent extends ChartComponent<ArchiveDataX> {
 
     private onDestroy$ = new Subject();
 
@@ -27,17 +25,16 @@ export class TemperatureChartComponent extends ChartComponent<ArchiveDataX> {
 
     public ngOnInit(): void {
 
-        this.prop = 'outTemp';
-        this.areaMinProp = 'minOutTemp';
-        this.areaMaxProp = 'maxOutTemp';
+        // this.prop = 'windSpeed';
+        this.areaMinProp = 'windSpeed';
+        this.areaMaxProp = 'windGust';
         this.timeProp = 'dateTime';
-        this.unit = '°C';
+        this.unit = 'm/s';
 
         this.archiveChartsService.archiveDataX$.subscribe(archiveDataX => {
             this._data = archiveDataX;
             this.draw();
         });
-
     }
 
     public ngOnDestroy(): void {
@@ -51,7 +48,7 @@ export class TemperatureChartComponent extends ChartComponent<ArchiveDataX> {
     }
 
     protected draw(): void {
-        console.log('TemperatureChartComponent.draw()');
+        console.log('WindChartComponent.draw()');
         if (!this.d3Painter) {
             console.warn('!this.d3Painter');
             return;

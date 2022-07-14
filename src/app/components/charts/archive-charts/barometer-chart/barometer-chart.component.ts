@@ -25,9 +25,9 @@ export class BarometerChartComponent extends ChartComponent<ArchiveDataX> {
 
     public ngOnInit(): void {
 
-        this.prop="barometer";
-        this.timeProp="dateTime";
-        this.unit="hPa";
+        this.prop = 'barometer';
+        this.timeProp = 'dateTime';
+        this.unit = 'hPa';
 
         this.archiveChartsService.archiveDataX$.subscribe(archiveDataX => {
             this._data = archiveDataX;

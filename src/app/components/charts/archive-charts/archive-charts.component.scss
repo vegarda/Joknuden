@@ -8,18 +8,12 @@ mat-card {
     margin: 1em 0;
 }
 
+jok-temperature-chart,
+jok-wind-chart,
 jok-temperature-chart {
     height: 30em;
     display: flex;
 }
-
-
-jok-barometer-chart {
-    height: 30em;
-    display: flex;
-}
-
-
 
 @media screen and (max-width: 1024px) {
 

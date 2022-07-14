@@ -6,8 +6,13 @@
 
         .graph {
 
-            path {
-                stroke: $material-pink-900;
+            &.area {
+
+                path {
+                    stroke: $material-light-blue-50;
+                    fill: $material-light-blue-900;
+                    opacity: 0.8;
+                }
             }
         }
     }

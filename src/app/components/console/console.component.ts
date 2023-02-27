@@ -86,7 +86,7 @@ export class ConsoleComponent implements OnInit, OnDestroy {
     }
 
 
-    private onDestroy$: Subject<void> = new Subject();
+    private onDestroy$ = new Subject<void>();
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,

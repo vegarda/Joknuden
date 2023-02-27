@@ -13,7 +13,7 @@ export enum Action {
 })
 export class AppService {
 
-    private _action$: Subject<Action> = new Subject();
+    private _action$ = new Subject<Action>();
     public get action$(): Observable<Action> {
         return this._action$;
     }

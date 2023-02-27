@@ -15,7 +15,7 @@ import { ArchiveChartsService } from '../archive-charts.service';
 })
 export class BarometerChartComponent extends ChartComponent<ArchiveDataX> {
 
-    private onDestroy$ = new Subject();
+    private onDestroy$ = new Subject<void>();
 
     constructor(
         private archiveChartsService: ArchiveChartsService,
